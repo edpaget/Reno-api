@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130107193110) do
+ActiveRecord::Schema.define(:version => 20130107205513) do
 
   create_table "deploys", :force => true do |t|
     t.string   "git_ref"
@@ -32,6 +32,8 @@ ActiveRecord::Schema.define(:version => 20130107193110) do
     t.string   "s3_bucket"
     t.datetime "created_at",        :null => false
     t.datetime "updated_at",        :null => false
+    t.string   "build_step"
+    t.string   "build_dir"
   end
 
   add_foreign_key "deploys", "projects", :name => "deploys_project_id_fk"

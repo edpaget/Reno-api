@@ -13,7 +13,6 @@ gem 'immigrant'
 
 gem 'resque'
 gem 'aws-sdk'
-gem 'octokit'
 
 group :development, :test do
   gem 'rspec-rails'

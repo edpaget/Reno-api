@@ -1,5 +1,5 @@
 class Project < ActiveRecord::Base
-  attr_accessible :github_repository, :jenkins_url, :name, :s3_bucket
+  attr_accessible :github_repository, :jenkins_url, :name, :s3_bucket, :build_step, :build_dir
   has_many :deploys
 
   validates :name, :presence => true
@@ -37,12 +37,12 @@ class Project < ActiveRecord::Base
   end
 
   def update_from_params params
-    update_attributes! :jenkins_url => params[:jenkins_url],
-                       :s3_bucket => params[:s3_bucket]
+    params.keep_if { |key, value| [:jenkins_url, :s3_bucket, :build_step, :build_dir].include? key }
+    update_attributes! params
   end
 
   def build_project
-    last_commit.build_deploy s3_bucket
+    last_commit.build_deploy s3_bucket, build_step, build_dir
   end
 
   def last_commit
