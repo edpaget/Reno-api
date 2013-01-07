@@ -42,7 +42,7 @@ class Project < ActiveRecord::Base
   end
 
   def build_project
-    last_commit.build_deploy s3_bucket, build_step, build_dir
+    last_commit.build_deploy s3_bucket, github_repository, build_step, build_dir
   end
 
   def last_commit
