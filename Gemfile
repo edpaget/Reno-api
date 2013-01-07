@@ -14,6 +14,10 @@ gem 'immigrant'
 gem 'resque', require: 'resque/server'
 gem 'aws-sdk'
 
+group :test do
+  gem 'simplecov', :require => false
+end
+
 group :development, :test do
   gem 'rspec-rails'
   gem 'factory_girl_rails'
