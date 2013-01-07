@@ -9,8 +9,8 @@ describe Deploy do
     end
 
     it 'should enqueue a resque process' do
-      Resque.should_receive(:enqueue).with(Build, @deploy.id, 'bucket')
-      @deploy.build_deploy 'bucket'
+      Resque.should_receive(:enqueue).with(Build, @deploy.id, 'bucket', 'ruby build.rb', 'build/')
+      @deploy.build_deploy 'bucket', 'ruby build.rb', 'build/'
     end
   end
 end
