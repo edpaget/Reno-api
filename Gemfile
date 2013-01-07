@@ -11,7 +11,7 @@ gem 'pg'
 gem 'foreigner'
 gem 'immigrant'
 
-gem 'resque'
+gem 'resque', require: 'resque/server'
 gem 'aws-sdk'
 
 group :development, :test do
