@@ -1,0 +1,13 @@
+common: &common
+  adapter: postgresql
+  host: localhost
+  username: zoo_build
+  password:
+  
+development:
+  <<: *common
+  database: zoo_build_development
+
+test:
+  <<: *common
+  database: zoo_build_test
