@@ -6,4 +6,7 @@ ZooBuild::Application.routes.draw do
       get 'build', to: 'deploys#build'
     end
   end
+
+  match '*all' => 'application#cors', constraints: { method: 'OPTIONS' }
+  mount Resque::Server, :at => "/resque"
 end

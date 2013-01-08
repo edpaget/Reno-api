@@ -1,6 +1,12 @@
 {
   "RSpec": {
     "coverage": {
+      "/Users/edpaget/Documents/zoo-build/spec/controllers/projects_controller_spec.rb": [
+        1,
+        null,
+        1,
+        null
+      ],
       "/Users/edpaget/Documents/zoo-build/spec/models/deploy_spec.rb": [
         1,
         null,
@@ -137,6 +143,6 @@
         null
       ]
     },
-    "timestamp": 1357597443
+    "timestamp": 1357663389
   }
 }
