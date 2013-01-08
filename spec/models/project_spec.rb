@@ -85,7 +85,7 @@ describe Project do
   describe "#build_project" do
     it 'should invoke the build method on the deploy with the last-commit status' do
       deploy = FactoryGirl.create(:last_commit)
-      deploy.should_receive(:build_deploy).with("MyProject", "https://github.com/edpaget/my_project", "ruby build.rb", "build/")
+      deploy.should_receive(:build_deploy)
 
       @project.deploys << deploy
       @project.build_project

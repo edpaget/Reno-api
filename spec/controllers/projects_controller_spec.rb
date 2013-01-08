@@ -106,9 +106,26 @@ describe ProjectsController do
       expect(assigns(:project)).to be_a(Project)
     end
 
-    it 'should call destory on the requeted project' do
+    it 'should call destory on the requested project' do
       @project.should_receive(:destroy)
       delete :destroy, :id => 1
+    end
+  end
+
+  describe '#build' do
+    before(:each) do
+      @project = FactoryGirl.build_stubbed(:project)
+      Project.should_receive(:find).with(1).and_return(@project)
+    end
+
+    it 'should fetch the requested project' do
+      get :build, :project_id => 1
+      expect(assigns(:project)).to be_a(Project)
+    end
+
+    it 'should call build on the requested project' do
+      @project.should_receive(:build_project)
+      get :build, :project_id => 1
     end
   end
 end

@@ -34,4 +34,10 @@ class ProjectsController < ApplicationController
     head :ok
   end
 
+  def build
+    @project = Project.find params[:project_id].to_i
+    @project.build_project
+    head :ok
+  end
+
 end

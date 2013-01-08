@@ -115,6 +115,23 @@
         1,
         null,
         null,
+        null,
+        1,
+        1,
+        2,
+        2,
+        null,
+        null,
+        1,
+        1,
+        1,
+        null,
+        null,
+        1,
+        1,
+        1,
+        null,
+        null,
         null
       ],
       "/Users/edpaget/Documents/zoo-build/spec/models/deploy_spec.rb": [
@@ -242,6 +259,18 @@
         null,
         null
       ],
+      "/Users/edpaget/Documents/zoo-build/spec/routing/project_routes_spec.rb": [
+        1,
+        null,
+        1,
+        1,
+        1,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
       "/Users/edpaget/Documents/zoo-build/spec/workers/build_spec.rb": [
         1,
         null,
@@ -253,6 +282,6 @@
         null
       ]
     },
-    "timestamp": 1357667892
+    "timestamp": 1357672655
   }
 }
