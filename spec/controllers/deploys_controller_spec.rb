@@ -1,6 +1,35 @@
 require 'spec_helper'
 
 describe DeploysController do
+  describe '#index' do
+    before(:each) do
+      Deploy.should_receive(:where).with("project_id = ?", 1).and_return([FactoryGirl.create(:deploy)])
+    end
+
+    it 'should call Deploy.where with project_id' do
+      get :index, :project_id => 1
+    end
+
+    it 'should assign deploys with the returned objects' do
+      get :index, :project_id => 1
+      expect(assigns(:deploys)).to be_an(Array)
+    end
+  end
+
+  describe "#show" do
+    before(:each) do
+      Deploy.should_receive(:find).with(1).and_return(FactoryGirl.create(:deploy))
+    end
+
+    it 'should call deploy find with the deploy id' do
+      get :show, :project_id => 1, :id => 1
+    end
+
+    it 'should assign deploy with the return object' do
+      get :show, :project_id => 1, :id => 1
+      expect(assigns(:deploy)).to be_a(Deploy)
+    end
+  end
 
   describe "#build" do
     before(:each) do
