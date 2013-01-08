@@ -38,8 +38,10 @@ GEM
       mocha (= 0.10.5)
     builder (3.0.4)
     coderay (1.0.8)
+    daemons (1.1.9)
     diff-lcs (1.1.3)
     erubis (2.7.0)
+    eventmachine (1.0.0)
     factory_girl (4.1.0)
       activesupport (>= 3.0.0)
     factory_girl_rails (4.1.0)
@@ -158,6 +160,10 @@ GEM
       multi_json (~> 1.0)
       rack (~> 1.0)
       tilt (~> 1.1, != 1.3.0)
+    thin (1.5.0)
+      daemons (>= 1.0.9)
+      eventmachine (>= 0.12.6)
+      rack (>= 1.0.0)
     thor (0.16.0)
     tilt (1.3.3)
     treetop (1.4.12)
@@ -182,8 +188,10 @@ DEPENDENCIES
   pry
   rails (= 3.2.10)
   rails-api
+  rake
   rb-fsevent
   resque
   rspec-rails
   shoulda-matchers
   simplecov
+  thin

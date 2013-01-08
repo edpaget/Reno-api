@@ -6,8 +6,10 @@ gem 'rails', '3.2.10'
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
 gem 'rails-api'
+gem 'rake'
 
 gem 'pg'
+gem 'thin'
 gem 'foreigner'
 gem 'immigrant'
 
