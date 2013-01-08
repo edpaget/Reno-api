@@ -18,7 +18,7 @@ describe Project do
 
   describe "::from_github_webhook" do
     after(:each) do
-      Project.from_github_webhook(@payload)
+      Project.from_github_webhook(@payload.to_json)
     end
 
     it 'should update it the project exists' do

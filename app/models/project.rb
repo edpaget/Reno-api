@@ -6,7 +6,7 @@ class Project < ActiveRecord::Base
   validates :github_repository, :presence => true
 
   def self.from_github_webhook payload
-    puts payload.class
+    payload = JSON.parse payload, {:symbolize_names => true }
     project = where("name = :name AND github_repository = :repo_url", 
                     {:name => payload[:repository][:name], 
                      :repo_url => payload[:repository][:url]}).first
