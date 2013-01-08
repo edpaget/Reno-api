@@ -11,6 +11,10 @@ SimpleCov.start
 # in spec/support/ and its subdirectories.
 Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
 
+def json_response
+  @json_response ||= ActiveSupport::JSON.decode @response.body
+end
+
 RSpec.configure do |config|
   # ## Mock Framework
   #

@@ -1,8 +1,8 @@
 ZooBuild::Application.routes.draw do
-  resource :projects do
+  resources :projects do
     get 'build', to: 'projects#build'
 
-    resource :deploys do
+    resources :deploys do
       get 'build', to: 'deploys#build'
     end
   end
