@@ -25,9 +25,8 @@ describe ProjectsController do
         expect(json_response).to have(3).items
       end
 
-      it 'should have an array of deploys' do
-        expect(json_response.first['deploys']).to be_an(Array)
-        expect(json_response.first['deploys']).to have(2).items
+      it 'should have the last commit' do
+        expect(json_response.first['last_commit']).to be_a(Hash)
       end
     end
   end

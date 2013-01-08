@@ -1,12 +1,12 @@
 class ProjectsController < ApplicationController
   def index
     @projects = Project.find :all
-    render json: @projects.as_json(:include => :deploys)
+    render json: @projects.as_json(:include => :last_commit)
   end
 
   def show
     @project = Project.find params[:id].to_i
-    render json: @project.as_json(:include => :deploys)
+    render json: @project.as_json(:include => :last_commit)
   end
 
   def create
@@ -25,7 +25,7 @@ class ProjectsController < ApplicationController
       @project.update_from_params params
     end
 
-    render json: @project.as_json(:include => :deploys)
+    render json: @project.as_json(:include => :last_commit)
   end
 
   def destroy
