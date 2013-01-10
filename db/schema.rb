@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130110170234) do
+ActiveRecord::Schema.define(:version => 20130110175355) do
 
   create_table "deploys", :force => true do |t|
     t.string   "git_ref"
@@ -48,8 +48,9 @@ ActiveRecord::Schema.define(:version => 20130110170234) do
     t.string   "oauth_token"
     t.string   "oauth_secret"
     t.string   "uid"
-    t.datetime "created_at",   :null => false
-    t.datetime "updated_at",   :null => false
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
+    t.text     "github_projects"
   end
 
   add_foreign_key "deploys", "projects", :name => "deploys_project_id_fk"

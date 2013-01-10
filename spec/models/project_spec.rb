@@ -15,6 +15,7 @@ describe Project do
   it { should validate_presence_of(:name) }
   it { should validate_presence_of(:github_repository) }
   it { should have_many(:deploys) }
+  it { should have_and_belong_to_many(:users) }
 
   describe "::from_github_webhook" do
     after(:each) do
