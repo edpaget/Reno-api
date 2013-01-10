@@ -7,18 +7,18 @@ gem 'rails', '3.2.10'
 
 gem 'rails-api'
 gem 'rake'
+gem 'thin'
 
 gem 'pg'
-gem 'thin'
 gem 'foreigner'
 gem 'immigrant'
 
 gem 'resque', require: 'resque/server'
 gem 'aws-sdk'
+gem 'octokit'
 
-group :test do
-  gem 'simplecov', :require => false
-end
+gem 'omniauth'
+gem 'omniauth-github'
 
 group :development, :test do
   gem 'rspec-rails'

@@ -1,4 +1,6 @@
 ZooBuild::Application.routes.draw do
+  get "sessions/create"
+
   get "deploys/build"
 
   resources :projects do

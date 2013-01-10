@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130107205513) do
+ActiveRecord::Schema.define(:version => 20130110170234) do
 
   create_table "deploys", :force => true do |t|
     t.string   "git_ref"
@@ -36,6 +36,25 @@ ActiveRecord::Schema.define(:version => 20130107205513) do
     t.string   "build_dir"
   end
 
+  create_table "projects_users", :force => true do |t|
+    t.integer "user_id",    :null => false
+    t.integer "project_id", :null => false
+  end
+
+  create_table "users", :force => true do |t|
+    t.string   "provider"
+    t.string   "name"
+    t.string   "email"
+    t.string   "oauth_token"
+    t.string   "oauth_secret"
+    t.string   "uid"
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
+  end
+
   add_foreign_key "deploys", "projects", :name => "deploys_project_id_fk"
+
+  add_foreign_key "projects_users", "projects", :name => "projects_users_project_id_fk"
+  add_foreign_key "projects_users", "users", :name => "projects_users_user_id_fk"
 
 end

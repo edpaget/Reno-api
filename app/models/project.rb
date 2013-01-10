@@ -1,6 +1,7 @@
 class Project < ActiveRecord::Base
   attr_accessible :github_repository, :jenkins_url, :name, :s3_bucket, :build_step, :build_dir
   has_many :deploys
+  has_and_belongs_to_many :users
 
   validates :name, :presence => true
   validates :github_repository, :presence => true
