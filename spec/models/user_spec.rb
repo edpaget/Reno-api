@@ -4,8 +4,8 @@ describe User do
   it { should have_and_belong_to_many(:projects) }
   it { should validate_presence_of(:name) }
   it { should validate_presence_of(:uid) }
-  it { should validate_presence_of(:oauth_secret) }
   it { should validate_presence_of(:oauth_token) }
+  it { should validate_presence_of(:github_username) }
 
   before(:each) do
     @user = FactoryGirl.create(:user)
@@ -17,8 +17,7 @@ describe User do
                      :uid => 'MyString',
                      :info => { :name => 'edpaget',
                                 :email => 'edpaget@example.com'},
-                     :credentials => { :token => 'ajskd;flajsd;f',
-                                       :secret => 'as;ldfkjasioweraerq' } }
+                     :credentials => { :token => 'ajskd;flajsd;f' }}
     end
 
     it 'should return object if it already exists' do

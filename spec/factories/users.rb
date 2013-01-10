@@ -6,7 +6,7 @@ FactoryGirl.define do
     name "MyString"
     email "MyString"
     oauth_token "MyString"
-    oauth_secret "MyString"
+    github_username "MyString"
     uid "MyString"
   end
 end
