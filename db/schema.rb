@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130110200700) do
+ActiveRecord::Schema.define(:version => 20130110210523) do
 
   create_table "deploys", :force => true do |t|
     t.string   "git_ref"
@@ -49,7 +49,6 @@ ActiveRecord::Schema.define(:version => 20130110200700) do
     t.string   "uid"
     t.datetime "created_at",      :null => false
     t.datetime "updated_at",      :null => false
-    t.text     "github_projects"
     t.string   "github_username"
   end
 

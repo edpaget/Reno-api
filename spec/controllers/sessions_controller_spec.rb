@@ -11,11 +11,11 @@ describe SessionsController do
     end
 
     it 'should call find_or_create on Users' do
-      post :create
+      post :create, :provider => 'github'
     end
 
     it 'should redirect to /' do
-      post :create
+      post :create, :provider => 'github'
       expect(response).to redirect_to '/'
     end
   end

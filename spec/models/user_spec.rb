@@ -29,11 +29,6 @@ describe User do
       User.should_receive(:create!).and_return(@user)
       User.find_or_create_from_omniauth(@auth_hash)
     end
-
-    it 'should queue a task to retrieve the user\'s projects from github' do
-      Resque.should_receive(:enqueue).with(GithubProjectList, @user.id)
-      User.find_or_create_from_omniauth(@auth_hash)
-    end
   end
 
   describe "#changed_credentials?" do

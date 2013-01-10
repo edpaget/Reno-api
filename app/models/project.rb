@@ -7,7 +7,7 @@ class Project < ActiveRecord::Base
   validates :github_repository, :presence => true
 
   def self.from_github_webhook payload
-    payload = JSON.parse payload, {:symbolize_names => true }
+    payload = JSON.parse payload, {:symbolize_names => true } if payload.class == String
     project = where("name = :name AND github_repository = :repo_url", 
                     {:name => payload[:repository][:name], 
                      :repo_url => payload[:repository][:url]}).first
@@ -18,10 +18,13 @@ class Project < ActiveRecord::Base
     end
   end
 
+
+
   def self.create_from_webhook payload
     project = create! do |p|
       p.name = payload[:repository][:name]
       p.github_repository = payload[:repository][:url]
+      p.branch = payload[:repository][:branch] if payload[:repository].has_key? :branch
     end
     project.update_from_webhook payload[:commits].last
   end

@@ -2,8 +2,6 @@ class User < ActiveRecord::Base
   attr_accessible :email, :name, :oauth_token, :provider, :uid, :github_username
   has_and_belongs_to_many :projects
 
-  serialize :github_projects, Hash
-
   validates_presence_of :name
   validates_presence_of :oauth_token
   validates_presence_of :github_username
@@ -24,8 +22,6 @@ class User < ActiveRecord::Base
       new_credentials = { :oauth_token => auth[:credentials][:token] }
       user.update_attributes!  new_credentials
     end
-
-    Resque.enqueue GithubProjectList, user.id
     return user
   end
 
