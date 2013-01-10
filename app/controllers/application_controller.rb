@@ -1,5 +1,7 @@
 class ApplicationController < ActionController::API
   before_filter :set_headers
+  before_filter :current_user
+  helper_method :current_user
 
   def cors
     head :ok if request.request_method == 'OPTIONS'
@@ -23,4 +25,15 @@ class ApplicationController < ActionController::API
     end
   end
 
+  def current_user
+    @current_user ||= User.find(session[:user_id]) if session[:user_id]
+  end
+
+  def set_session
+    session[:user_id] = @current_user.id
+  end
+
+  def logged_in?
+    !session[:user_id].nil?
+  end
 end
