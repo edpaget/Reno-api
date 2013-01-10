@@ -11,6 +11,7 @@ ZooBuild::Application.routes.draw do
     end
   end
 
+  match '/auth/:provider/callback', to: 'sessions#create'
   match '*all' => 'application#cors', constraints: { method: 'OPTIONS' }
   mount Resque::Server, :at => "/resque"
 end
