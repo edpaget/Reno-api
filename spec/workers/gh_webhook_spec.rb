@@ -21,7 +21,7 @@ describe GithubWebhook do
 
     it 'should create a new webhook' do
       @client.should_receive(:create_hook)
-        .with( "#{@user.github_username}/#{@repo_name}", "web",
+        .with( @repo_name, "web",
               { :url => "http://zoo-build.herokuapp.com",
                 :content_type => 'json' },
               { :events => ['push'],

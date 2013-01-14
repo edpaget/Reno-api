@@ -23,7 +23,7 @@ describe GithubTarball do
 
     it 'should retrieve the link to the tarball' do
       @client.should_receive(:archive_link)
-        .with("#{@user.github_username}/#{@repo_name}", :ref => @git_ref)
+        .with(@repo_name, :ref => @git_ref)
         .and_return("http://example.com")
       GithubTarball.perform @user, @git_ref, @repo_name
     end

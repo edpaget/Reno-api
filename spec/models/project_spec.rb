@@ -32,20 +32,21 @@ describe Project do
   describe "::from_post" do
     before(:each) do
       @user = FactoryGirl.create(:user)
+      Resque.stub!(:enqueue)
       Project.should_receive(:create!).and_return(@project)
-      @project.should_receive(:update_last_commit)
     end
 
     it 'should create a new Project model and save it' do 
       Project.from_post @payload, @user
     end
 
-    it 'should call update last commit with the latest commit' do
+    it 'should queue a process to retreive the last commit' do
+      Resque.should_receive(:enqueue).with(GithubCommit, @user, @project)
       Project.from_post @payload, @user
     end
 
     it 'should queue a process to set up github webhook' do
-      Resque.should_receive(:enqueue).with(GithubWebhook, @project.users.first, @project.name)
+      Resque.should_receive(:enqueue).with(GithubWebhook, @user, @project.name)
       Project.from_post @payload, @user
     end
   end

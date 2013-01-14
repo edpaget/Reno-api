@@ -1,5 +1,5 @@
 class Project < ActiveRecord::Base
-  attr_accessible :github_repository, :jenkins_url, :name, :s3_bucket, :build_step, :build_dir
+  attr_accessible :github_repository, :jenkins_url, :name, :s3_bucket, :build_step, :build_dir, :branch
   has_many :deploys
   has_and_belongs_to_many :users
 
@@ -21,12 +21,15 @@ class Project < ActiveRecord::Base
       p.name = payload[:name]
       p.github_repository = payload[:url]
       p.branch = payload[:branch] 
+      p.jenkins_url = payload[:jenkins_url] if payload.has_key? :jenkins_url
+      p.s3_bucket = payload[:s3_bucket] if payload.has_key? :s3_bucket
+      p.build_setp = payload[:build_step] if payload.has_key? :build_step
+      p.build_dir = payload[:build_dir] if payload.has_key? :build_dir
     end
     project.users.push user
-    project.save!
 
-    project.update_last_commit payload[:commit]
-    Resque.enqueue GithubWebhook, project.users.first, project.name
+    Resque.enqueue GithubCommit, user, project
+    Resque.enqueue GithubWebhook, user, project.name
     project
   end
 
@@ -34,10 +37,10 @@ class Project < ActiveRecord::Base
     last_commit.destroy if last_commit
 
     deploy = deploys.create! do |d|
-      d.git_ref = payload[:id]
+      d.git_ref = payload[:id] || payload[:sha]
       d.commit_message = payload[:message]
       d.commit_user = payload[:author][:name]
-      d.commit_time = payload[:timestamp]
+      d.commit_time = payload[:timestamp] || payload[:committer][:data]
       d.deploy_status = "last-commit"
     end
 
