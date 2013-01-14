@@ -2,6 +2,7 @@ class ApplicationController < ActionController::API
   before_filter :set_headers
   before_filter :current_user
   helper_method :current_user
+  helper_method :not_authorized
 
   def cors
     head :ok if request.request_method == 'OPTIONS'
@@ -35,5 +36,9 @@ class ApplicationController < ActionController::API
 
   def logged_in?
     !session[:user_id].nil?
+  end
+
+  def not_authorized
+    render json: { :status => "Not Authorized" }.as_json, :status => 401
   end
 end

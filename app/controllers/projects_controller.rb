@@ -1,7 +1,12 @@
 class ProjectsController < ApplicationController
   def index
-    @projects = Project.find :all
-    render json: @projects.as_json(:include => :last_commit)
+    if logged_in?
+      @projects = @current_user.projects
+      render json: @projects.as_json(:include => :last_commit)
+    else
+      puts 'here'
+      not_authorized
+    end
   end
 
   def show
@@ -11,19 +16,19 @@ class ProjectsController < ApplicationController
 
   def create
     if params.has_key? :payload
-      Project.from_github_webhook params[:payload]
+      @project = Project.update_from_webhook params[:payload]
       head :ok
+    elsif logged_in?
+      @project = @projectProject.from_post params
+      render json: @project.as_json(:include => :last_commit)
+    else
+      not_authorized
     end
   end
 
   def update
     @project = Project.find params[:id].to_i
-
-    if params.has_key? :payload
-      @project.update_from_webhook params[:payload]
-    else
-      @project.update_from_params params
-    end
+    @project.update_from_params params
 
     render json: @project.as_json(:include => :last_commit)
   end

@@ -3,16 +3,35 @@ require 'spec_helper'
 describe ProjectsController do
   describe '#index' do
     before(:each) do
-      Project.should_receive(:find).with(:all).and_return([FactoryGirl.create(:project_with_last_commit), FactoryGirl.create(:project), FactoryGirl.create(:project)])
+      @user = FactoryGirl.create(:user)
+      session[:user_id] = @user.id
+      @user.should_receive(:projects)
+        .and_return([FactoryGirl.create(:project_with_last_commit), 
+                     FactoryGirl.create(:project), 
+                     FactoryGirl.create(:project)])
+
+      User.stub!(:find).and_return(@user)
     end
 
-    it 'should call find(:all) on Projects model' do
+    it 'should call projects on the current_user' do
       get :index
     end
 
     it 'should assign @projects' do
       get :index
       expect(assigns(:projects)).to have(3).items
+    end
+
+    describe 'when no user is logged in' do
+      before(:each) do
+        @user.rspec_reset
+        session[:user_id] = nil
+      end
+
+      it 'should return not authorized' do
+        get :index
+        expect(response.status).to eq(401)
+      end
     end
 
     describe 'response' do

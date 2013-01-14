@@ -3,12 +3,13 @@ require 'spec_helper'
 describe Project do
   before(:each) do
     @project = FactoryGirl.create(:project)
-    @payload = { :repository => { :name => "MyProject",
-                                  :url => "https://github.com/edpaget/my_project" },
-                 :commits => [ { :id => 'asdfasd', 
-                                 :message => "test", 
-                                 :author => { :name => "Ed" }, 
-                                 :timestamp => "2008-02-15T14:57:17-08:00" } ] }
+    @payload = { :name => "MyProject",
+                 :url => "https://github.com/edpaget/my_project",
+                 :branch => "master",
+                 :commit => { :id => 'asdfasd', 
+                               :message => "test", 
+                               :author => { :name => "Ed" }, 
+                               :timestamp => "2008-02-15T14:57:17-08:00" }}
               
   end
 
@@ -17,54 +18,35 @@ describe Project do
   it { should have_many(:deploys) }
   it { should have_and_belong_to_many(:users) }
 
-  describe "::from_github_webhook" do
-    after(:each) do
-      Project.from_github_webhook(@payload.to_json)
-    end
-
-    it 'should update it the project exists' do
-      project = FactoryGirl.create(:project)
-
-      Project.should_receive(:where)
-        .with("name = :name AND github_repository = :repo_url",
-              {:name => 'MyProject', :repo_url => "https://github.com/edpaget/my_project" })
-        .and_return([project])
-      project.should_receive(:update_from_webhook)
-    end
-
-    it 'should create a new project when the project does not exist' do
-      Project.should_receive(:where)
-        .with("name = :name AND github_repository = :repo_url",
-              {:name => "MyProject", :repo_url => "https://github.com/edpaget/my_project" })
-        .and_return([])
-
-      Project.should_receive(:create_from_webhook)
+  describe "::update_from_webhook" do
+    before(:each) do
+      Project.should_receive(:where).and_return(@project)
     end
   end
 
-  describe "::create_from_webhook" do
+  describe "::from_post" do
     before(:each) do
       Project.should_receive(:create!).and_return(@project)
     end
 
     it 'should create a new Project model and save it' do 
-      Project.create_from_webhook @payload
+      Project.from_post @payload
     end
 
-    it 'should call update from webhook with the latest commit' do
-      @project.should_receive(:update_from_webhook)
-      Project.create_from_webhook @payload
+    it 'should call update last commit with the latest commit' do
+      @project.should_receive(:update_last_commit)
+      Project.from_post @payload
     end
   end
 
-  describe "#update_from_webhook" do
+  describe "#update_last_commit" do
     before(:each) do
       @project = FactoryGirl.create(:project_with_last_commit)
       @deploy = FactoryGirl.create(:deploy)
     end
 
     after(:each) do
-      @project.update_from_webhook @payload[:commits].last
+      @project.update_last_commit @payload[:commit]
     end
 
     it 'should delete the last-commit' do

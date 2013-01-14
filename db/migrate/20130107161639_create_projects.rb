@@ -6,7 +6,6 @@ class CreateProjects < ActiveRecord::Migration
       t.string :jenkins_url
       t.string :s3_bucket
       t.time :last_deploy
-      t.string_array :previous_versions
 
       t.timestamps
     end
