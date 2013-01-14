@@ -16,13 +16,18 @@ class Project < ActiveRecord::Base
     project
   end
 
-  def self.from_post payload
+  def self.from_post payload, user
     project = create! do |p|
       p.name = payload[:name]
       p.github_repository = payload[:url]
       p.branch = payload[:branch] 
     end
+    project.users.push user
+    project.save!
+
     project.update_last_commit payload[:commit]
+    Resque.enqueue(GithubWebhook, project.users.first, project.name)
+    project
   end
 
   def update_last_commit payload
@@ -35,6 +40,8 @@ class Project < ActiveRecord::Base
       d.commit_time = payload[:timestamp]
       d.deploy_status = "last-commit"
     end
+
+    Resque.enqueue(GithubTarball, users.first, payload[:id])
   end
 
   def update_from_params params

@@ -8,6 +8,7 @@ FactoryGirl.define do
     s3_bucket "MyProject"
     build_step "ruby build.rb"
     build_dir "build/"
+    users { |g| [ g.association(:user) ] }
   end
 
   factory :project_with_last_commit, :parent => :project do
