@@ -69,7 +69,7 @@ describe Project do
     end
 
     it 'should queue the tarball downloader' do
-      Resque.should_receive(:enqueue).with(GithubTarball, @project.users.first, @payload[:commit][:id])
+      Resque.should_receive(:enqueue).with(GithubTarball, @project.users.first, @payload[:commit][:id], @project.name)
     end
   end
 

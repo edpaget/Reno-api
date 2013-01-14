@@ -26,7 +26,7 @@ class Project < ActiveRecord::Base
     project.save!
 
     project.update_last_commit payload[:commit]
-    Resque.enqueue(GithubWebhook, project.users.first, project.name)
+    Resque.enqueue GithubWebhook, project.users.first, project.name
     project
   end
 
@@ -41,7 +41,7 @@ class Project < ActiveRecord::Base
       d.deploy_status = "last-commit"
     end
 
-    Resque.enqueue(GithubTarball, users.first, payload[:id])
+    Resque.enqueue GithubTarball, users.first, payload[:id], name
   end
 
   def update_from_params params
