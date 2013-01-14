@@ -4,7 +4,6 @@ class ProjectsController < ApplicationController
       @projects = @current_user.projects
       render json: @projects.as_json(:include => :last_commit)
     else
-      puts 'here'
       not_authorized
     end
   end
@@ -19,7 +18,7 @@ class ProjectsController < ApplicationController
       @project = Project.update_from_webhook params[:payload]
       head :ok
     elsif logged_in?
-      @project = @projectProject.from_post params
+      @project = Project.from_post params
       render json: @project.as_json(:include => :last_commit)
     else
       not_authorized
@@ -27,16 +26,23 @@ class ProjectsController < ApplicationController
   end
 
   def update
-    @project = Project.find params[:id].to_i
-    @project.update_from_params params
-
-    render json: @project.as_json(:include => :last_commit)
+    if logged_in?
+      @project = Project.find params[:id].to_i
+      @project.update_from_params params
+      render json: @project.as_json(:include => :last_commit)
+    else
+      not_authorized
+    end
   end
 
   def destroy
-    @project = Project.find params[:id].to_i
-    @project.destroy
-    head :ok
+    if logged_in?
+      @project = Project.find params[:id].to_i
+      @project.destroy
+      head :ok
+    else
+      not_authorized
+    end
   end
 
   def build

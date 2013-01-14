@@ -1,16 +1,18 @@
 require 'spec_helper'
 
 describe ProjectsController do
+  before(:each) do
+    @user = FactoryGirl.create(:user)
+    User.stub!(:find).and_return(@user)
+    session[:user_id] = @user.id
+  end
+
   describe '#index' do
     before(:each) do
-      @user = FactoryGirl.create(:user)
-      session[:user_id] = @user.id
       @user.should_receive(:projects)
-        .and_return([FactoryGirl.create(:project_with_last_commit), 
-                     FactoryGirl.create(:project), 
-                     FactoryGirl.create(:project)])
-
-      User.stub!(:find).and_return(@user)
+      .and_return([FactoryGirl.create(:project_with_last_commit), 
+                   FactoryGirl.create(:project), 
+                   FactoryGirl.create(:project)])
     end
 
     it 'should call projects on the current_user' do
@@ -76,14 +78,19 @@ describe ProjectsController do
   end
 
   describe '#create' do
-    it 'should call from github webhook on the project model' do
-      Project.should_receive(:from_github_webhook)
-      post :create, :payload => 'junk'
-    end
+    describe 'updating from webhook' do
+      before(:each) do
+        Project.should_receive(:update_from_webhook)
+      end
 
-    it 'should return okay' do
-      post :create
-      expect(@response.status).to eq(200)
+      it 'should call from github webhook on the project model' do
+        post :create, :payload => 'junk'
+      end
+
+      it 'should return okay' do
+        post :create, :payload => 'junk'
+        expect(@response.status).to eq(200)
+      end
     end
   end
 
@@ -98,35 +105,36 @@ describe ProjectsController do
       expect(assigns(:project)).to be_a(Project)
     end
 
-    describe 'from github' do
-      it 'should call update_from_webhook' do
-        @project.should_receive(:update_from_webhook)
-        put :update, :id => 1, :payload => 'junk'
-      end
-    end
-
-    describe 'from web' do
-      it 'should call update_from_params' do
-        @project.should_receive(:update_from_params)
-        put :update, :id => 1, :jenkins_url => 'http://example.com'
-      end
+    it 'should call update_from_params' do
+      @project.should_receive(:update_from_params)
+      put :update, :id => 1, :jenkins_url => 'http://example.com'
     end
   end
 
   describe '#destory' do
-    before(:each) do
-      @project = FactoryGirl.create(:project)
-      Project.should_receive(:find).with(1).and_return(@project)
+    describe 'when there is a logged in user' do
+      before(:each) do
+        @project = FactoryGirl.create(:project)
+        Project.should_receive(:find).with(1).and_return(@project)
+      end
+
+      it 'should fetch the requested project' do
+        delete :destroy, :id => 1
+        expect(assigns(:project)).to be_a(Project)
+      end
+
+      it 'should call destory on the requested project' do
+        @project.should_receive(:destroy)
+        delete :destroy, :id => 1
+      end
     end
 
-    it 'should fetch the requested project' do
-      delete :destroy, :id => 1
-      expect(assigns(:project)).to be_a(Project)
-    end
-
-    it 'should call destory on the requested project' do
-      @project.should_receive(:destroy)
-      delete :destroy, :id => 1
+    describe 'when no user is logged in' do
+      it 'should return not authorized' do
+        session[:user_id] = nil
+        delete :destroy, :id => '1'
+        expect(response.status).to eq(401)
+      end
     end
   end
 
