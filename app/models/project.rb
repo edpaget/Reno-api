@@ -56,4 +56,8 @@ class Project < ActiveRecord::Base
   def last_commit
     deploys.select { |d| d.deploy_status == "last-commit" }.first
   end
+
+  def owner? user
+    users.include? user
+  end
 end

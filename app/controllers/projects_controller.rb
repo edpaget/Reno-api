@@ -27,9 +27,13 @@ class ProjectsController < ApplicationController
 
   def update
     if logged_in?
-      @project = Project.find params[:id].to_i
-      @project.update_from_params params
-      render json: @project.as_json(:include => :last_commit)
+      @project = Project.find params[:id].to_i 
+      if @project.owner? @current_user
+        @project.update_from_params params
+        render json: @project.as_json(:include => :last_commit)
+      else
+        not_authorized
+      end
     else
       not_authorized
     end
@@ -38,17 +42,29 @@ class ProjectsController < ApplicationController
   def destroy
     if logged_in?
       @project = Project.find params[:id].to_i
-      @project.destroy
-      head :ok
+      if @project.owner? @current_user
+        @project.destroy
+        head :ok
+      else
+        not_authorized
+      end
     else
       not_authorized
     end
   end
 
   def build
-    @project = Project.find params[:project_id].to_i
-    @project.build_project
-    head :ok
+    if logged_in?
+      @project = Project.find params[:project_id].to_i
+      if @project.owner? @current_user
+        @project.build_project
+        head :ok
+      else
+        not_authorized
+      end
+    else
+      not_authorized
+    end
   end
 
 end

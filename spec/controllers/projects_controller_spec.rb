@@ -96,7 +96,8 @@ describe ProjectsController do
 
   describe '#update' do
     before(:each) do
-      @project = FactoryGirl.build_stubbed(:project)
+      @project = FactoryGirl.create(:project)
+      @project.users.push @user
       Project.should_receive(:find).with(1).and_return(@project)
     end
 
@@ -115,6 +116,7 @@ describe ProjectsController do
     describe 'when there is a logged in user' do
       before(:each) do
         @project = FactoryGirl.create(:project)
+        @project.users.push @user
         Project.should_receive(:find).with(1).and_return(@project)
       end
 
@@ -140,7 +142,8 @@ describe ProjectsController do
 
   describe '#build' do
     before(:each) do
-      @project = FactoryGirl.build_stubbed(:project)
+      @project = FactoryGirl.create(:project)
+      @project.users.push @user
       Project.should_receive(:find).with(1).and_return(@project)
     end
 

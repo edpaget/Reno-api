@@ -22,6 +22,11 @@ describe Project do
     before(:each) do
       Project.should_receive(:where).and_return(@project)
     end
+
+    it 'should  call update last commit on the project' do
+      @project.should_receive(:update_last_commit)
+      Project.update_from_webhook :repository => { :url => 'http://example.com' }, :commits => [ 'hey' ]
+    end
   end
 
   describe "::from_post" do
@@ -93,6 +98,19 @@ describe Project do
 
     it 'should find the deploy model with the last-commit status' do
       @project.last_commit.deploy_status.should eq("last-commit")
+    end
+  end
+
+  describe '#owner?' do
+    it 'should return true if project owner is user' do
+      user = FactoryGirl.create(:user)
+      @project.users.push user
+      expect(@project.owner?(user)).to be_true
+    end
+
+    it 'should return false otherwise' do
+      user = FactoryGirl.create(:user)
+      expect(@project.owner?(user)).to be_false
     end
   end
 end
