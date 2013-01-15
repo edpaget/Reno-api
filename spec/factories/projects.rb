@@ -9,6 +9,7 @@ FactoryGirl.define do
     build_step "ruby build.rb"
     build_dir "build/"
     branch "master"
+    deploys { |g| [ g.association(:recently_built), g.association(:deploy) ] }
     users { |g| [ g.association(:user) ] }
   end
 
