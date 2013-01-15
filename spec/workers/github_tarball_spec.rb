@@ -3,8 +3,9 @@ require 'spec_helper'
 describe GithubTarball do
   before(:each) do
     @user = FactoryGirl.create(:user)
-    @git_ref = 'blench'
-    @repo_name = 'gasp'
+    @project = FactoryGirl.create(:project_with_last_commit)
+    Project.stub!(:find).and_return(@project)
+    User.stub!(:find).and_return(@user)
   end
 
   describe '::perform' do
@@ -18,14 +19,14 @@ describe GithubTarball do
     end
 
     it 'should create a new github client' do
-      GithubTarball.perform @user, @git_ref, @repo_name
+      GithubTarball.perform @user.id, @project.id
     end
 
     it 'should retrieve the link to the tarball' do
       @client.should_receive(:archive_link)
-        .with(@repo_name, :ref => @git_ref)
+        .with(@project.name, :ref => @project.last_commit.git_ref)
         .and_return("http://example.com")
-      GithubTarball.perform @user, @git_ref, @repo_name
+      GithubTarball.perform @user.id, @project.id
     end
   end
 

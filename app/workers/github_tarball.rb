@@ -3,7 +3,14 @@ require 'open-uri'
 class GithubTarball
   @queue = :github_tarball
 
-  def self.perform user, git_ref, repo_name
+  def self.perform user_id, project_id
+    user = User.find user_id
+    project = Project.find project_id
+
+    repo_name = project.name
+    git_ref = project.last_commit.git_ref
+
+
     client = Octokit::Client.new :login => user.github_username, :oauth_token => user.oauth_token
     tarball_url = client.archive_link repo_name, :ref => git_ref
     download git_ref, tarball_url, repo_name

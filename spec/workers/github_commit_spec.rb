@@ -4,6 +4,8 @@ describe GithubCommit do
   before(:each) do
     @user = FactoryGirl.create(:user)
     @project = FactoryGirl.create(:project)
+    User.stub!(:find).and_return(@user)
+    Project.stub!(:find).and_return(@project)
   end
 
   describe '::perform' do

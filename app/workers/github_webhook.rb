@@ -1,7 +1,9 @@
 class GithubWebhook
   @queue = :github_webhook
 
-  def self.perform user, repo_name
+  def self.perform user_id, repo_name
+    user = User.find user_id
+
     client = Octokit::Client.new :login => user.github_username, :oauth_token => user.oauth_token
     url = { :url => "http://zoo-build.herokuapp.com", :content_type => 'json' }
     hooks = { :events => %w(push), :active => true }

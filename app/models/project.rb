@@ -33,8 +33,6 @@ class Project < ActiveRecord::Base
       project.retrieve_last_commit user
     end
 
-    puts project.users
-
     project.users.push user unless project.users.include? user
     project
   end

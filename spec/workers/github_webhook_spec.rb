@@ -4,6 +4,7 @@ describe GithubWebhook do
   before(:each) do
     @repo_name = 'egads'
     @user = FactoryGirl.create(:user)
+    User.stub!(:find).and_return(@user)
   end
 
   describe '::perform' do
@@ -16,7 +17,7 @@ describe GithubWebhook do
 
     it 'should create a new octokit client' do
       @client.stub!(:create_hook)
-      GithubWebhook.perform @user, @repo_name
+      GithubWebhook.perform @user.id, @repo_name
     end
 
     it 'should create a new webhook' do
@@ -26,7 +27,7 @@ describe GithubWebhook do
                 :content_type => 'json' },
               { :events => ['push'],
                 :active => true } )
-      GithubWebhook.perform @user, @repo_name
+      GithubWebhook.perform @user.id, @repo_name
     end
   end
   
