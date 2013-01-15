@@ -1,42 +1,37 @@
 class Build
   @queue = :builds
 
-  def self.perform deploy_id, bucket, build_step, build_dir, git_url
+  def self.perform deploy_id
     deploy = Deploy.find deploy_id
-    Dir.chdir Rails.root
+    project = Deploy.project
 
-    download = <<-BASH
-    mkdir tmp/deploy
-    cd tmp/deploy
-    git init
-    git remote add origin #{git_url}
-    git fetch origin #{deploy.git_ref}
-    git reset --hard FETCH_HEAD
-    BASH
-    system download
+    @s3 = AWS::S3.new
+    deploy_remote_path = "zookeeper/#{project.name}/#{deploy.git_ref}.tar.gz"
+    deploy_local_path = "#{ Rails.root }/tmp/deploy/deploy.tar.gz"
+    File.open(deploy_path, 'wb') do |file|
+      file.write @s3.buckets['ubret'].objects[deploy_remote_path].read
+    end
 
-    build_project build_step
-    upload_to_s3 bucket, build_dir
-    Dir.chdir Rails.root
-    `rm -rf tmp/deploy/`
+    build_project project.build_step
+    if $?.success?
+      upload_to_s3
+    else
+      # send message to user
+    end
   end
 
   def self.build_project build_step
-    Dir.chdir Rails.root
-
-    build =<<-BASH
-    cd tmp/deploy
-    #{build_step}
-    BASH
-
-    system build
+    deploy_dir = "#{Rails.root}/tmp/deploy" 
+    output = String.new
+    IO.popen([build_step, :chdir => deploy_dir, :err => [:child, :out]]) do |process|
+      output = process.read
+    end
   end
 
   def self.upload_to_s3 bucket_name, build_dir
-    s3 = AWS::S3.new
     bucket = s3.buckets[bucket_name]
 
-    Dir.chdir build_dir
+    Dir.chdir "#{ Rails.root }/tmp/deploy/#{build_dir}"
     to_upload = Dir['**/*'].reject{ |path| File.directory? path }
     to_upload.delete 'index.html'
 

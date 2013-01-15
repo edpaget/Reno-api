@@ -12,15 +12,15 @@ class GithubTarball
 
     client = Octokit::Client.new :login => user.github_username, :oauth_token => user.oauth_token
     tarball_url = client.archive_link repo_name, :ref => git_ref
+    puts tarball_url
     download git_ref, tarball_url, repo_name
   end
 
   def self.download ref, url, repo_name
     download_path = "#{ Rails.root }/tmp/#{ref}.tar.gz"
     puts download_path
-    File.open(download_path, 'wb').binmode do |out|
-      out.write open(url).read
-    end
+    open(url, 'rb') do |tar|
+      File.open(download_path
     upload ref, download_path, repo_name
   end
 
@@ -30,6 +30,5 @@ class GithubTarball
 
     file_name = "zookeeper/#{repo_name}/#{ref}.tar.gz"
     bucket.objects[file_name].write :file => path
-    File.delete path
   end
 end

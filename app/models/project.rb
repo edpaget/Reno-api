@@ -50,9 +50,9 @@ class Project < ActiveRecord::Base
 
     deploy = deploys.create! do |d|
       d.git_ref = payload[:sha]
-      d.commit_message = payload[:message]
-      d.commit_user = payload[:committer][:name]
-      d.commit_time = payload[:committer][:date]
+      d.commit_message = payload[:commit][:message]
+      d.commit_user = payload[:commit][:committer][:name]
+      d.commit_time = payload[:commit][:committer][:date]
       d.deploy_status = "last-commit"
     end
 

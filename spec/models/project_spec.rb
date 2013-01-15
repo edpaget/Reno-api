@@ -7,6 +7,7 @@ describe Project do
     @payload = { :name => "MyProject",
                  :url => "https://github.com/edpaget/my_project",
                  :branch => "master",
+                 :sha => 'askdlj;faskdjf',
                  :commit => { :id => 'asdfasd', 
                                :message => "test", 
                                :committer => { :name => "Ed",
@@ -70,7 +71,7 @@ describe Project do
     end
 
     after(:each) do
-      @project.update_last_commit @payload[:commit]
+      @project.update_last_commit @payload
     end
 
     it 'should delete the last-commit' do
