@@ -21,8 +21,8 @@ class ApplicationController < ActionController::API
     if (request.headers["HTTP_ORIGIN"]) and (allowed? request.headers["HTTP_ORIGIN"])
       headers['Access-Control-Allow-Origin'] = request.headers['HTTP_ORIGIN']
       headers['Access-Control-Allow-Credentials'] = 'true'
-      headers['Access-Control-Allow-Methods'] = %w(GET POST PUT DELETE OPTIONS)
-      headers['Access-Control-Allow-Headers'] = %w(Origin Accept Content-Type X-Requested-With)
+      headers['Access-Control-Allow-Methods'] = %w(GET POST PUT DELETE OPTIONS).join ", "
+      headers['Access-Control-Allow-Headers'] = %w(Origin Accept Content-Type X-Requested-With).join ", "
     end
   end
 

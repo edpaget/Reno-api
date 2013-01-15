@@ -18,7 +18,7 @@ class ProjectsController < ApplicationController
       @project = Project.update_from_webhook params[:payload]
       head :ok
     elsif logged_in?
-      @project = Project.from_post params
+      @project = Project.from_post params, @current_user
       render json: @project.as_json(:include => :last_commit)
     else
       not_authorized
