@@ -20,15 +20,15 @@ describe GithubCommit do
     end
 
     it 'should create a new github client' do
-      GithubCommit.perform @user, @project
+      GithubCommit.perform @user.id, @project.id
     end
 
     it 'should download all commits' do
-      GithubCommit.perform @user, @project
+      GithubCommit.perform @user.id, @project.id
     end
 
     it 'should call update_last_commit' do
-      GithubCommit.perform @user, @project
+      GithubCommit.perform @user.id, @project.id
     end
   end
 end

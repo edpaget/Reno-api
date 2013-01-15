@@ -11,7 +11,7 @@ class Project < ActiveRecord::Base
     if project.nil?
       throw Error
     else
-      project.update_last_commit payload[:commits].last
+      project.update_last_commit payload
     end
     project
   end
@@ -49,11 +49,25 @@ class Project < ActiveRecord::Base
     last_commit.destroy if last_commit
 
     deploy = deploys.create! do |d|
-      d.git_ref = payload[:id] || payload[:sha]
+      d.git_ref = payload[:sha]
       d.commit_message = payload[:message]
-      d.commit_user = payload[:author][:name]
-      d.commit_time = payload[:timestamp] || payload[:committer][:data]
+      d.commit_user = payload[:committer][:name]
+      d.commit_time = payload[:committer][:date]
       d.deploy_status = "last-commit"
+    end
+
+    Resque.enqueue GithubTarball, users.first.id, id
+  end
+
+  def update_last_commit_from_webhook payload
+    last_commit.destroy if last_commit
+
+    deploy = deploys.create! do |d|
+      d.git_ref = payload[:after]
+      d.commit_message = payload[:commits].last[:message]
+      d.commit_user = payload[:commits].last[:author][:name]
+      d.commit_time = payload[:commits].last[:timestamp]
+      d.deploy_statys = "last-commit"
     end
 
     Resque.enqueue GithubTarball, users.first.id, id

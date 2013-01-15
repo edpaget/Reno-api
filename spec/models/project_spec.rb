@@ -9,7 +9,8 @@ describe Project do
                  :branch => "master",
                  :commit => { :id => 'asdfasd', 
                                :message => "test", 
-                               :author => { :name => "Ed" }, 
+                               :committer => { :name => "Ed",
+                                              :date => "2011-04-14T16:00:49Z" }, 
                                :timestamp => "2008-02-15T14:57:17-08:00" }}
               
   end
@@ -130,5 +131,8 @@ describe Project do
     it 'should return a string of the most recent deploy' do
       expect(@project.most_recent_deploy).to eq("2013-01-10 12:51:31")
     end
+  end
+
+  describe '#update_from_webhook' do
   end
 end
