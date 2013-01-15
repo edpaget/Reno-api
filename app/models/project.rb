@@ -17,20 +17,32 @@ class Project < ActiveRecord::Base
   end
 
   def self.from_post payload, user
-    project = create! do |p|
-      p.name = payload[:name]
-      p.github_repository = payload[:url]
-      p.branch = payload[:branch] 
-      p.jenkins_url = payload[:jenkins_url] if payload.has_key? :jenkins_url
-      p.s3_bucket = payload[:s3_bucket] if payload.has_key? :s3_bucket
-      p.build_step = payload[:build_step] if payload.has_key? :build_step
-      p.build_dir = payload[:build_dir] if payload.has_key? :build_dir
-    end
-    project.users.push user
+    project = where "github_repository = ?", payload[:url]
 
-    Resque.enqueue GithubCommit, user, project
-    Resque.enqueue GithubWebhook, user, project.name
+    if project.nil?
+      project = create! do |p|
+        p.name = payload[:name]
+        p.github_repository = payload[:url]
+        p.branch = payload[:branch] 
+        p.jenkins_url = payload[:jenkins_url] if payload.has_key? :jenkins_url
+        p.s3_bucket = payload[:s3_bucket] if payload.has_key? :s3_bucket
+        p.build_step = payload[:build_step] if payload.has_key? :build_step
+        p.build_dir = payload[:build_dir] if payload.has_key? :build_dir
+      end
+      project.set_github_webhook user
+      project.retrieve_last_commit user
+    end
+
+    project.users.push user unless project.users.include? user
     project
+  end
+
+  def set_github_webhook user
+    Resque.enqueue GithubWebhook, user, self.name
+  end
+
+  def retrieve_last_commit user
+    Resque.enqueue GithubCommit, user, self 
   end
 
   def update_last_commit payload

@@ -3,6 +3,7 @@ require 'spec_helper'
 describe Project do
   before(:each) do
     @project = FactoryGirl.create(:project)
+    @user = FactoryGirl.create(:user)
     @payload = { :name => "MyProject",
                  :url => "https://github.com/edpaget/my_project",
                  :branch => "master",
@@ -31,23 +32,32 @@ describe Project do
 
   describe "::from_post" do
     before(:each) do
-      @user = FactoryGirl.create(:user)
       Resque.stub!(:enqueue)
-      Project.should_receive(:create!).and_return(@project)
+      Project.stub!(:where).and_return(nil)
+    end
+
+    it 'should check if the project has already been created' do
+      Project.should_receive(:where).with("github_repository = ?", "https://github.com/edpaget/my_project").and_return(@project)
+      Project.from_post @payload, @user
     end
 
     it 'should create a new Project model and save it' do 
+      Project.should_receive(:create!).and_return(@project)
       Project.from_post @payload, @user
     end
+  end
 
-    it 'should queue a process to retreive the last commit' do
-      Resque.should_receive(:enqueue).with(GithubCommit, @user, @project)
-      Project.from_post @payload, @user
-    end
-
+  describe "#retrieve_last_commit" do
     it 'should queue a process to set up github webhook' do
+      Resque.should_receive(:enqueue).with(GithubCommit, @user, @project)
+      @project.retrieve_last_commit @user
+    end
+  end
+
+  describe "#set_github_webhook" do
+    it 'should queue a process to retreive the last commit' do
       Resque.should_receive(:enqueue).with(GithubWebhook, @user, @project.name)
-      Project.from_post @payload, @user
+      @project.set_github_webhook @user
     end
   end
 
