@@ -37,11 +37,12 @@ describe Project do
     end
 
     it 'should check if the project has already been created' do
-      Project.should_receive(:where).with("github_repository = ?", "https://github.com/edpaget/my_project").and_return(@project)
+      Project.should_receive(:where).with("github_repository = ?", "https://github.com/edpaget/my_project").and_return([@project])
       Project.from_post @payload, @user
     end
 
     it 'should create a new Project model and save it' do 
+      Project.stub!(:where).and_return([])
       Project.should_receive(:create!).and_return(@project)
       Project.from_post @payload, @user
     end
@@ -49,14 +50,14 @@ describe Project do
 
   describe "#retrieve_last_commit" do
     it 'should queue a process to set up github webhook' do
-      Resque.should_receive(:enqueue).with(GithubCommit, @user, @project)
+      Resque.should_receive(:enqueue).with(GithubCommit, @user.id, @project.id)
       @project.retrieve_last_commit @user
     end
   end
 
   describe "#set_github_webhook" do
     it 'should queue a process to retreive the last commit' do
-      Resque.should_receive(:enqueue).with(GithubWebhook, @user, @project.name)
+      Resque.should_receive(:enqueue).with(GithubWebhook, @user.id, @project.name)
       @project.set_github_webhook @user
     end
   end
@@ -80,7 +81,7 @@ describe Project do
     end
 
     it 'should queue the tarball downloader' do
-      Resque.should_receive(:enqueue).with(GithubTarball, @project.users.first, @payload[:commit][:id], @project.name)
+      Resque.should_receive(:enqueue).with(GithubTarball, @project.users.first.id, @project.id)
     end
   end
 

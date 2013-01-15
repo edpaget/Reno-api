@@ -1,6 +1,6 @@
 class Project < ActiveRecord::Base
   attr_accessible :github_repository, :jenkins_url, :name, :s3_bucket, :build_step, :build_dir, :branch
-  has_many :deploys
+  has_many :deploys, :dependent => :destroy
   has_and_belongs_to_many :users
 
   validates :name, :presence => true
@@ -17,7 +17,7 @@ class Project < ActiveRecord::Base
   end
 
   def self.from_post payload, user
-    project = where "github_repository = ?", payload[:url]
+    project = where("github_repository = ?", payload[:url]).first
 
     if project.nil?
       project = create! do |p|
@@ -33,16 +33,18 @@ class Project < ActiveRecord::Base
       project.retrieve_last_commit user
     end
 
+    puts project.users
+
     project.users.push user unless project.users.include? user
     project
   end
 
   def set_github_webhook user
-    Resque.enqueue GithubWebhook, user, self.name
+    Resque.enqueue GithubWebhook, user.id, self.name
   end
 
   def retrieve_last_commit user
-    Resque.enqueue GithubCommit, user, self 
+    Resque.enqueue GithubCommit, user.id, self.id
   end
 
   def update_last_commit payload
@@ -56,7 +58,7 @@ class Project < ActiveRecord::Base
       d.deploy_status = "last-commit"
     end
 
-    Resque.enqueue GithubTarball, users.first, payload[:id], name
+    Resque.enqueue GithubTarball, users.first.id, id
   end
 
   def update_from_params params
