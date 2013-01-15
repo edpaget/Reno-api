@@ -23,7 +23,7 @@ class Project < ActiveRecord::Base
       p.branch = payload[:branch] 
       p.jenkins_url = payload[:jenkins_url] if payload.has_key? :jenkins_url
       p.s3_bucket = payload[:s3_bucket] if payload.has_key? :s3_bucket
-      p.build_setp = payload[:build_step] if payload.has_key? :build_step
+      p.build_step = payload[:build_step] if payload.has_key? :build_step
       p.build_dir = payload[:build_dir] if payload.has_key? :build_dir
     end
     project.users.push user
