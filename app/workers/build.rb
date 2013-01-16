@@ -1,10 +1,10 @@
 class Build
   @queue = :builds
 
-  def self.perform deploy_id
+  def self.perform deploy_id, user_id
     deploy = Deploy.find deploy_id
+    user = Deploy.find user_id
     project = Deploy.project
-    @output = String.new
 
     @s3 = AWS::S3.new
     deploy_remote_path = "zookeeper/#{project.name}/#{deploy.git_ref}.tar.gz"
@@ -13,19 +13,22 @@ class Build
       file.write @s3.buckets['ubret'].objects[deploy_remote_path].read
     end
 
-    build_project project.build_step
+    output = build_project project.build_step
     if $?.success?
+      message = Message.from_build "Successfully built #{project.name}", output, user, deploy.project
       upload_to_s3 project.s3_bucket, project.build_dir
     else
-      # send message to user
+      message = Message.from_build "Failed to build #{project.name}", output, user, deploy.project
     end
   end
 
   def self.build_project build_step
     deploy_dir = "#{Rails.root}/tmp/deploy" 
+    output = String.new
     IO.popen([build_step, :chdir => deploy_dir, :err => [:child, :out]]) do |process|
-      @output.concat process.read
+      output = process.read
     end
+    output
   end
 
   def self.upload_to_s3 bucket_name, build_dir

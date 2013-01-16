@@ -19,6 +19,7 @@ describe Project do
   it { should validate_presence_of(:name) }
   it { should validate_presence_of(:github_repository) }
   it { should have_many(:deploys) }
+  it { should have_many(:messages) }
   it { should have_and_belong_to_many(:users) }
 
   describe "::update_from_webhook" do
@@ -101,7 +102,7 @@ describe Project do
       deploy.should_receive(:build_deploy)
 
       @project.deploys << deploy
-      @project.build_project
+      @project.build_project @user
     end
   end
 

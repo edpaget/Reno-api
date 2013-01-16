@@ -3,14 +3,15 @@ require 'spec_helper'
 describe Deploy do
   before(:each) do
     @deploy = FactoryGirl.create(:deploy)
+    @user = FactoryGirl.create(:user)
   end
 
   it { should belong_to(:project) }
 
   describe "#build_deploy" do
     it 'should enqueue a resque process' do
-      Resque.should_receive(:enqueue).with(Build, @deploy.id)
-      @deploy.build_deploy 
+      Resque.should_receive(:enqueue).with(Build, @deploy.id, @user.id)
+      @deploy.build_deploy @user
     end
   end
 

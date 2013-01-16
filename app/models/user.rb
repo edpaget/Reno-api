@@ -1,6 +1,7 @@
 class User < ActiveRecord::Base
   attr_accessible :email, :name, :oauth_token, :provider, :uid, :github_username
   has_and_belongs_to_many :projects
+  has_many :messages
 
   validates_presence_of :name
   validates_presence_of :oauth_token

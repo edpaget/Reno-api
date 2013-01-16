@@ -1,6 +1,7 @@
 class Project < ActiveRecord::Base
   attr_accessible :github_repository, :jenkins_url, :name, :s3_bucket, :build_step, :build_dir, :branch
   has_many :deploys, :dependent => :destroy
+  has_many :messages
   has_and_belongs_to_many :users
 
   validates :name, :presence => true
@@ -78,8 +79,8 @@ class Project < ActiveRecord::Base
     update_attributes! params
   end
 
-  def build_project
-    last_commit.build_deploy if last_commit
+  def build_project user
+    last_commit.build_deploy user if last_commit
   end
 
   def last_commit

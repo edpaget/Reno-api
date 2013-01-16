@@ -33,7 +33,11 @@ describe DeploysController do
 
   describe "#build" do
     before(:each) do
+      @user = FactoryGirl.create(:user)
+      User.stub!(:find).and_return(@user)
+      session[:user_id] = @user.id
       @deploy = FactoryGirl.build_stubbed(:deploy)
+      @deploy.project.should_receive(:owner?).and_return(true)
       Deploy.should_receive(:find).with(1).and_return(@deploy)
     end
 
@@ -48,7 +52,7 @@ describe DeploysController do
     end
 
     it 'should call build_deploy ont he request deploy' do
-      @deploy.should_receive(:build_deploy)
+      @deploy.should_receive(:build_deploy).with(@user)
       get 'build', :project_id => 1, :deploy_id => 1
     end
   end

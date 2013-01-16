@@ -10,8 +10,16 @@ class DeploysController < ApplicationController
   end
 
   def build
-    @deploy = Deploy.find params[:deploy_id].to_i
-    @deploy.build_deploy
-    head :ok
+    if logged_in?
+      @deploy = Deploy.find params[:deploy_id].to_i
+      if @deploy.project.owner? @current_user
+        @deploy.build_deploy @current_user
+        head :ok
+      else
+        not_authorized
+      end
+    else
+      not_authorized
+    end
   end
 end

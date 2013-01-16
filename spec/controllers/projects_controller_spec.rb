@@ -153,7 +153,7 @@ describe ProjectsController do
     end
 
     it 'should call build on the requested project' do
-      @project.should_receive(:build_project)
+      @project.should_receive(:build_project).with(@user)
       get :build, :project_id => 1
     end
   end

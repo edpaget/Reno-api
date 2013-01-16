@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130115171712) do
+ActiveRecord::Schema.define(:version => 20130116160300) do
 
   create_table "deploys", :force => true do |t|
     t.string   "git_ref"
@@ -23,6 +23,15 @@ ActiveRecord::Schema.define(:version => 20130115171712) do
     t.string   "deploy_status"
     t.datetime "commit_time"
     t.datetime "build_time"
+  end
+
+  create_table "messages", :force => true do |t|
+    t.string   "text"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+    t.integer  "project_id"
+    t.integer  "user_id"
+    t.string   "status"
   end
 
   create_table "projects", :force => true do |t|
@@ -54,6 +63,9 @@ ActiveRecord::Schema.define(:version => 20130115171712) do
   end
 
   add_foreign_key "deploys", "projects", :name => "deploys_project_id_fk"
+
+  add_foreign_key "messages", "projects", :name => "messages_project_id_fk"
+  add_foreign_key "messages", "users", :name => "messages_user_id_fk"
 
   add_foreign_key "projects_users", "projects", :name => "projects_users_project_id_fk"
   add_foreign_key "projects_users", "users", :name => "projects_users_user_id_fk"

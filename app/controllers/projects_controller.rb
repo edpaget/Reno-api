@@ -57,7 +57,7 @@ class ProjectsController < ApplicationController
     if logged_in?
       @project = Project.find params[:project_id].to_i
       if @project.owner? @current_user
-        @project.build_project
+        @project.build_project @current_user
         head :ok
       else
         not_authorized

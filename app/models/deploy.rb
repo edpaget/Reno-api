@@ -4,8 +4,8 @@ class Deploy < ActiveRecord::Base
 
   before_destroy :remove_tarball
 
-  def build_deploy
-    Resque.enqueue Build, id
+  def build_deploy user
+    Resque.enqueue Build, id, user.id
   end
 
   private
