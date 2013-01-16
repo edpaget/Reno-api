@@ -1,7 +1,7 @@
 class Project < ActiveRecord::Base
   attr_accessible :github_repository, :jenkins_url, :name, :s3_bucket, :build_step, :build_dir, :branch
   has_many :deploys, :dependent => :destroy
-  has_many :messages
+  has_many :messages, :dependent => :destroy
   has_and_belongs_to_many :users
 
   validates :name, :presence => true
@@ -77,6 +77,8 @@ class Project < ActiveRecord::Base
   def update_from_params params
     params.keep_if { |key, value| [:jenkins_url, :s3_bucket, :build_step, :build_dir].include? key }
     update_attributes! params
+    puts self
+    self
   end
 
   def build_project user

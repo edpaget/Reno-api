@@ -32,5 +32,6 @@ class GithubTarball
 
     file_name = "zookeeper/#{repo_name}/#{ref}.tar.gz"
     bucket.objects[file_name].write :file => path
+    File.delete path
   end
 end

@@ -92,7 +92,7 @@ describe Project do
   describe "#update_from_params" do
     it "should call update_attributes" do
       @project.should_receive(:update_attributes!)
-      @project.update_from_params({ :jenkins_url => 'aasfd', :s3_bucket => 'bucket_name'})
+      @project.update_from_params({ :jenkins_url => 'aasfd', :s3_bucket => 'bucket_name', :build_dir => 'public'})
     end
   end
 
