@@ -68,6 +68,7 @@ describe Project do
     before(:each) do
       @project = FactoryGirl.create(:project_with_last_commit)
       @deploy = FactoryGirl.create(:deploy)
+      @project.last_commit.stub!(:destroy)
     end
 
     after(:each) do

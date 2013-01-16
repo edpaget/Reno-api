@@ -18,9 +18,11 @@ class GithubTarball
 
   def self.download ref, url, repo_name
     download_path = "#{ Rails.root }/tmp/#{ref}.tar.gz"
-    puts download_path
     open(url, 'rb') do |tar|
-      File.open(download_path
+      File.open(download_path, "wb") do |file|
+        file.write(tar.read)
+      end
+    end
     upload ref, download_path, repo_name
   end
 

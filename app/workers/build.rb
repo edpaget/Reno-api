@@ -4,6 +4,7 @@ class Build
   def self.perform deploy_id
     deploy = Deploy.find deploy_id
     project = Deploy.project
+    @output = String.new
 
     @s3 = AWS::S3.new
     deploy_remote_path = "zookeeper/#{project.name}/#{deploy.git_ref}.tar.gz"
@@ -14,7 +15,7 @@ class Build
 
     build_project project.build_step
     if $?.success?
-      upload_to_s3
+      upload_to_s3 project.s3_bucket, project.build_dir
     else
       # send message to user
     end
@@ -22,9 +23,8 @@ class Build
 
   def self.build_project build_step
     deploy_dir = "#{Rails.root}/tmp/deploy" 
-    output = String.new
     IO.popen([build_step, :chdir => deploy_dir, :err => [:child, :out]]) do |process|
-      output = process.read
+      @output.concat process.read
     end
   end
 
