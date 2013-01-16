@@ -6,7 +6,7 @@ FactoryGirl.define do
     git_ref "MyString"
     commit_user "MyString"
     commit_message "MyString"
-    deploy_status "deployed"
+    deploy_status "archived"
     build_time "2013-01-09 12:25:31"
   end
 
@@ -17,5 +17,9 @@ FactoryGirl.define do
 
   factory :recently_built, :parent => :deploy do
     build_time "2013-01-10 12:51:31"
+  end
+
+  factory :active, :parent => :recently_built do
+    deploy_status "active"
   end
 end

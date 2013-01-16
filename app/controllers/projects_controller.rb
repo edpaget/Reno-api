@@ -2,7 +2,7 @@ class ProjectsController < ApplicationController
   def index
     if logged_in?
       @projects = @current_user.projects
-      render json: @projects.as_json(:include => :last_commit)
+      render json: @projects.as_json(:include => [:last_commit, :active_deploy])
     else
       not_authorized
     end

@@ -91,8 +91,10 @@ describe Project do
 
   describe "#update_from_params" do
     it "should call update_attributes" do
-      @project.should_receive(:update_attributes!)
-      @project.update_from_params({ :jenkins_url => 'aasfd', :s3_bucket => 'bucket_name', :build_dir => 'public'})
+      @project.should_receive(:update_attributes)
+      @project.update_from_params({ 'jenkins_url' => 'aasfd', 
+                                    's3_bucket' => 'bucket_name', 
+                                    'build_dir' => 'public'})
     end
   end
 
@@ -113,7 +115,7 @@ describe Project do
     end
 
     it 'should find the deploy model with the last-commit status' do
-      @project.last_commit.deploy_status.should eq("last-commit")
+      expect(@project.last_commit.deploy_status).to eq("last-commit")
     end
   end
 
@@ -137,5 +139,28 @@ describe Project do
   end
 
   describe '#update_from_webhook' do
+  end
+
+  describe '#active_deploy' do
+    it 'should return the active deploy' do
+      expect(FactoryGirl.create(:project_active_deploy).active_deploy.deploy_status).to eq('active')
+    end
+  end
+
+  describe '#update_deploy_status' do
+    before(:each) do
+      @deploy = FactoryGirl.create(:deploy)
+      @project = FactoryGirl.create(:project_active_deploy)
+    end
+    it 'should change the active_deploy status to archived' do
+      prev_active = @project.active_deploy
+      expect{@project.update_deploy_status @deploy}
+        .to change{prev_active.deploy_status}.from("active").to("archived")
+    end
+
+    it 'should set the deploy to active' do
+      expect{@project.update_deploy_status @deploy}
+        .to change{@deploy.deploy_status}.from("archived").to("active")
+    end
   end
 end

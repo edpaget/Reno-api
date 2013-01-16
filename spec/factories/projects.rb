@@ -16,4 +16,8 @@ FactoryGirl.define do
   factory :project_with_last_commit, :parent => :project do
     deploys { |g| [ g.association(:deploy), g.association(:last_commit) ] }
   end
+
+  factory :project_active_deploy, :parent => :project do
+    deploys { |g| [ g.association(:deploy), g.association(:last_commit), g.association(:active) ] }
+  end
 end

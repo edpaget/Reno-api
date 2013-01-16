@@ -23,7 +23,13 @@ class Build
     output = build_project project.build_step, extract_dir
     if $?.success?
       message = Message.from_build "Successfully built #{project.name}", output, user, project
-      upload_to_s3 project.s3_bucket, extract_dir, project.build_dir
+      begin
+        upload_to_s3 project.s3_bucket, extract_dir, project.build_dir
+      rescue
+        message = Message.from_build "Failed to Deploy #{project.name}", $!, user, project
+      end
+      message = Message.from_build "Successfully deployed #{project.name}", '', user, project
+      project.update_deploy_status deploy
     else
       message = Message.from_build "Failed to build #{project.name}", output, user, project
     end

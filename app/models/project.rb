@@ -75,10 +75,14 @@ class Project < ActiveRecord::Base
   end
 
   def update_from_params params
-    params.keep_if { |key, value| [:jenkins_url, :s3_bucket, :build_step, :build_dir].include? key }
-    update_attributes! params
-    puts self
-    self
+    params = params.keep_if do |key, value| 
+      ['jenkins_url', 
+       's3_bucket', 
+       'build_step', 
+       'branch',
+       'build_dir'].include? key
+    end
+    update_attributes params
   end
 
   def build_project user
@@ -92,6 +96,15 @@ class Project < ActiveRecord::Base
   def most_recent_deploy
     sorted_deploys = deploys.sort { |left, right| right.build_time <=> left.build_time }
     sorted_deploys.first.build_time
+  end
+
+  def active_deploy
+    deploys.select { |d| d.deploy_status == "active" }.first
+  end
+
+  def update_deploy_status deploy
+    active_deploy.update_attribute :deploy_status, "archived"
+    deploy.update_attribute :deploy_status, "active"
   end
 
   def owner? user

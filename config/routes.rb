@@ -1,4 +1,6 @@
 ZooBuild::Application.routes.draw do
+  get "messages/index"
+
   resources :projects do
     get 'build', to: 'projects#build'
 
