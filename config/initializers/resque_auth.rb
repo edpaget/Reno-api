@@ -1,7 +1,4 @@
 Resque::Server.use(Rack::Auth::Basic) do |user, password|
-  if Rails.env.development? || Rails.env.test?
-    (user == 'user') && (password == 'password')
-  else
-    (user == ENV['resque_user']) && (password == ENV['resque_password'])
-  end
+  settings = YAML.load_file("#{Rails.root}/config/resque_auth.yml")[Rails.env]
+  (user == settings['username']) && (password == settings['password'])
 end
