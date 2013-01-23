@@ -6,9 +6,9 @@ preload_app true
 
 timeout 30
 
-pid "/rails/app/reno/current/tmp/pids/unicorn.pid"
-stderr_path "/rails/app/reno/current/log/unicorn.stderr.log"
-stdout_path "/rails/app/reno/current/log/unicorn.stdout.log"
+pid "/rails/apps/reno/current/tmp/pids/unicorn.pid"
+stderr_path "/rails/apps/reno/current/log/unicorn.stderr.log"
+stdout_path "/rails/apps/reno/current/log/unicorn.stdout.log"
 
 before_fork do |server, worker|
   defined?(ActiveRecord::Base) and
