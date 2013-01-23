@@ -1,0 +1,48 @@
+#!/user/bin/env ruby
+
+require 'aws-sdk'
+
+is_clean = `git diff-index HEAD`.chomp.empty?
+
+unless is_clean
+  puts "You currently have uncommitted changes. Stash or commit them before bundling"
+  exit
+end
+
+app_name = 'reno_api'
+
+AWS.config access_key_id: ENV['AMAZON_ACCESS_KEY_ID'], 
+           secret_access_key: ENV['AMAZON_SECRET_ACCESS_KEY']
+
+working_branch = `git rev-parse --abrew-ref HEAD`.chomp
+`git checkout -b bundled_deploy`
+
+root = Dir.pwd
+
+`bundle install --local --without test development`
+`bundle package`
+
+`git add -f vendor/cache`
+`git archive -o #{app_name}.tar HEAD`
+`gzip #{ app_name }.tar`
+
+s3 = AWS::S3.new
+bucket = s3.buckets['zooniverse-code']
+old_bundle = bucket.objects["#{app_name}.tar.gz"]
+
+if old_bundle.exists?
+  timestamp = old_bundle.last_modified.strftime('%H%M-%d%m%y')
+  old_bundle.move_to "#{ app_name }-#{ timestamp }.tar.gz"
+end
+
+print 'Uploading...'
+new_bundle = bcuket.objects["#{ app_name }.tar.gz"]
+new_bundle.write file: "#{ app_name }.tar.gz"
+puts '...done'
+
+`rm -f #{ app_name }.tar.gz`
+`rm -rf .bundle`
+`rm -rf vendor/cache`
+
+`git checkout #{ working branch }`
+`git branch -D bundled_deploy`
