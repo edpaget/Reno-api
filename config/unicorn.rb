@@ -6,7 +6,7 @@ preload_app true
 
 timeout 30
 
-pid "/rails/app/reno/current/tmp/pids/unicord/pid"
+pid "/rails/app/reno/current/tmp/pids/unicorn.pid"
 stderr_path "/rails/app/reno/current/log/unicorn.stderr.log"
 stdout_path "/rails/app/reno/current/log/unicorn.stdout.log"
 
