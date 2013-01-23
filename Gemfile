@@ -6,7 +6,7 @@ gem 'rails-api'
 gem 'rake'
 gem 'thin'
 
-gem 'pg'
+gem 'mysql'
 gem 'foreigner'
 gem 'immigrant'
 
@@ -28,4 +28,5 @@ group :development do
   gem 'rb-fsevent'
   gem 'growl'
   gem 'pry'
+  gem 'pg'
 end
