@@ -36,7 +36,7 @@ if old_bundle.exists?
 end
 
 print 'Uploading...'
-new_bundle = bcuket.objects["#{ app_name }.tar.gz"]
+new_bundle = bucket.objects["#{ app_name }.tar.gz"]
 new_bundle.write file: "#{ app_name }.tar.gz"
 puts '...done'
 
