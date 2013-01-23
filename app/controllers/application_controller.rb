@@ -14,7 +14,8 @@ class ApplicationController < ActionController::API
     [ 'localhost:3333',
       'localhost:3020',
       '0.0.0.0:3333',
-      'build.zooniverse.org' ].map { |location| "http://#{location}" }.include? origin
+      'reno.zooniverse.org',
+      'zooniverse-demo.s3.amazonaws.com' ].map { |location| "http://#{location}" }.include? origin
   end
 
   def set_headers
