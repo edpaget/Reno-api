@@ -76,7 +76,7 @@ class Build
         `file --mime-type -b #{ file }`.chomp
       end
 
-      bucket.objects[file].write file: file, alc: :public_read, content_type: content_type
+      bucket.objects[file].write file: file, acl: :public_read, content_type: content_type
     end
 
     bucket.objects['index.html'].write file: 'index.html', acl: :public_read, content_type: 'text/html', cache_control: 'no-cache, must_revalidate'
