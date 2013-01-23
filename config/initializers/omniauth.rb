@@ -1,3 +1,8 @@
 Rails.application.config.middleware.use OmniAuth::Builder do
-  provider :github, ENV['ZOO_BUILD_GITHUB_KEY'], ENV['ZOO_BUILD_GITHUB_SECRET'], scope: 'repo,user'
+  if Rails.env.production?
+    github_yaml = YAML.load_file("#{ Rails.root }/config/github_api.yml")['production']
+    proivder :github, github_yaml['key'], github_yaml['secret'], scope: 'repo,user'
+  else
+    provider :github, ENV['ZOO_BUILD_GITHUB_KEY'], ENV['ZOO_BUILD_GITHUB_SECRET'], scope: 'repo,user'
+  end
 end

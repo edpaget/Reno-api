@@ -42,7 +42,7 @@ puts '...done'
 
 `rm -f #{ app_name }.tar.gz`
 `rm -rf .bundle`
-`rm -rf vendor/cache`
+`git rm -rf vendor/cache`
 
 `git checkout #{ working branch }`
 `git branch -D bundled_deploy`
