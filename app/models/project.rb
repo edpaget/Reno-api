@@ -103,7 +103,7 @@ class Project < ActiveRecord::Base
   end
 
   def update_deploy_status deploy
-    active_deploy.update_attribute :deploy_status, "archived"
+    active_deploy.update_attribute :deploy_status, "archived" unless active_deploy.nil?
     deploy.update_attribute :deploy_status, "active"
   end
 

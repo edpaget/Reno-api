@@ -27,6 +27,7 @@ class Build
         upload_to_s3 project.s3_bucket, extract_dir, project.build_dir
       rescue
         message = Message.from_build "Failed to Deploy #{project.name}", $!, user, project
+        return
       end
       message = Message.from_build "Successfully deployed #{project.name}", '', user, project
       project.update_deploy_status deploy
