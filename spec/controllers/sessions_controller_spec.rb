@@ -16,7 +16,7 @@ describe SessionsController do
 
     it 'should redirect to /' do
       post :create, :provider => 'github'
-      expect(response).to redirect_to '/'
+      expect(response).to redirect_to 'http://reno.zooniverse.org'
     end
   end
 

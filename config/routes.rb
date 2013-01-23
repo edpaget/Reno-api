@@ -1,6 +1,4 @@
 ZooBuild::Application.routes.draw do
-  get "messages/index"
-
   resources :projects do
     get 'build', to: 'projects#build'
 
@@ -9,6 +7,7 @@ ZooBuild::Application.routes.draw do
     end
   end
 
+  get "messages", to: 'messages#index'
   get 'users', to: 'users#index'
   match '/auth/:provider/callback', to: 'sessions#create'
   match '*all' => 'application#cors', constraints: { method: 'OPTIONS' }

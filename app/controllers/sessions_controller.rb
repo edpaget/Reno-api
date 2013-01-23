@@ -2,7 +2,7 @@ class SessionsController < ApplicationController
   def create
     @current_user = User.find_or_create_from_omniauth auth_hash
     set_session
-    redirect_to '/'
+    redirect_to "http://reno.zooniverse.org"
   end
 
   private
