@@ -2,6 +2,7 @@ env = ENV['RAILS_ENV'] || 'development'
 
 worker_processes 2
 working_directory '/rails/apps/reno/current'
+listen '/tmp/reno.socket', :backlog => 64
 preload_app true
 
 timeout 30
