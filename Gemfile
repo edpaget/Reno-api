@@ -6,7 +6,7 @@ gem 'rails-api'
 gem 'rake'
 gem 'thin'
 
-gem 'mysql'
+gem 'mysql2'
 gem 'foreigner'
 gem 'immigrant'
 

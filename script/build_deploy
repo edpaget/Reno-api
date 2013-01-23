@@ -17,8 +17,6 @@ AWS.config access_key_id: ENV['AMAZON_ACCESS_KEY_ID'],
 working_branch = `git rev-parse --abrew-ref HEAD`.chomp
 `git checkout -b bundled_deploy`
 
-root = Dir.pwd
-
 `bundle install --local --without test development`
 `bundle package`
 
