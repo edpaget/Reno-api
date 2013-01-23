@@ -1,11 +1,8 @@
 class DeleteTarball
   @queue = :delete_tarball
 
-  def self.perform deploy_id
-    deploy = Deploy.find deploy_id
-    project = deploy.project
-
+  def self.perform project_name, git_ref
     s3 = AWS::S3.new
-    s3.buckets['ubret'].objects["zookeeper/#{project.name}/#{deploy.git_ref}.tar.gz"].delete
+    s3.buckets['ubret'].objects["zookeeper/#{project_name}/#{git_ref}.tar.gz"].delete
   end
 end

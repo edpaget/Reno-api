@@ -11,6 +11,6 @@ class Deploy < ActiveRecord::Base
   private
   
   def remove_tarball
-    Resque.enqueue DeleteTarball, id
+    Resque.enqueue DeleteTarball, project.name, git_ref
   end
 end

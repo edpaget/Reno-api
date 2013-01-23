@@ -2,6 +2,7 @@ require 'spec_helper'
 
 describe Deploy do
   before(:each) do
+    @project = FactoryGirl.create(:project)
     @deploy = FactoryGirl.create(:deploy)
     @user = FactoryGirl.create(:user)
   end
@@ -17,8 +18,8 @@ describe Deploy do
 
   describe "#remove_tarball" do
     it 'should enqueue a resque process to delete the tarball' do
-      Resque.should_receive(:enqueue).with(DeleteTarball, @deploy.id)
-      @deploy.destroy
+      Resque.should_receive(:enqueue).with(DeleteTarball, @project.name, @project.deploys.first.git_ref)
+      @project.deploys.first.destroy
     end
   end
 end
