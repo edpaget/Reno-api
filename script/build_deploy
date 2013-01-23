@@ -44,5 +44,5 @@ puts '...done'
 `rm -rf .bundle`
 `git rm -rf vendor/cache`
 
-`git checkout #{ working branch }`
+`git checkout #{ working_branch }`
 `git branch -D bundled_deploy`
