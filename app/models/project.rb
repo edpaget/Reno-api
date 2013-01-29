@@ -12,10 +12,10 @@ class Project < ActiveRecord::Base
     if project.nil?
       throw Error
     else
-      commit = { :sha => payload['repository']['head_commit']['id'],
-                 :commit => { :message => payload['repository']['head_commit']['message'],
-                              :committer => { :name => payload['repository']['head_commit']['committer']['name'],
-                                              :date => payload['repository']['head_commit']['timestamp'] }}}
+      commit = { :sha => payload['head_commit']['id'],
+                 :commit => { :message => payload['head_commit']['message'],
+                              :committer => { :name => payload['head_commit']['committer']['name'],
+                                              :date => payload['head_commit']['timestamp'] }}}
       project.update_last_commit commit
     end
     project
