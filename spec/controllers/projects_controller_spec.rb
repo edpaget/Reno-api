@@ -78,20 +78,6 @@ describe ProjectsController do
   end
 
   describe '#create' do
-    describe 'updating from webhook' do
-      before(:each) do
-        Project.should_receive(:update_from_webhook)
-      end
-
-      it 'should call from github webhook on the project model' do
-        post :create, :payload => 'junk'
-      end
-
-      it 'should return okay' do
-        post :create, :payload => 'junk'
-        expect(@response.status).to eq(200)
-      end
-    end
   end
 
   describe '#update' do
@@ -155,6 +141,23 @@ describe ProjectsController do
     it 'should call build on the requested project' do
       @project.should_receive(:build_project).with(@user)
       get :build, :project_id => 1
+    end
+  end
+
+  describe '#webhook' do
+    describe 'updating from webhook' do
+      before(:each) do
+        Project.should_receive(:update_from_webhook)
+      end
+
+      it 'should call from github webhook on the project model' do
+        post :webhook
+      end
+
+      it 'should return okay' do
+        post :webhook
+        expect(@response.status).to eq(200)
+      end
     end
   end
 end

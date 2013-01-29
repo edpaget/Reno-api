@@ -14,10 +14,7 @@ class ProjectsController < ApplicationController
   end
 
   def create
-    if params.has_key? :payload
-      @project = Project.update_from_webhook params[:payload]
-      head :ok
-    elsif logged_in?
+    if logged_in?
       @project = Project.from_post params, @current_user
       render json: @project.as_json(:include => :last_commit)
     else
@@ -65,6 +62,11 @@ class ProjectsController < ApplicationController
     else
       not_authorized
     end
+  end
+
+  def webhook
+    @project = Project.update_from_webhook params[:payload]
+    head :ok
   end
 
 end
