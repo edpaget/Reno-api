@@ -23,7 +23,7 @@ describe GithubWebhook do
     it 'should create a new webhook' do
       @client.should_receive(:create_hook)
         .with( @repo_name, "web",
-              { :url => "http://renoapi.zooniverse.org/webhook",
+              { :url => "http://renoapi.zooniverse.org/projects/webhook",
                 :content_type => 'json' },
               { :events => ['push'],
                 :active => true } )
