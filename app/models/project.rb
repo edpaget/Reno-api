@@ -8,7 +8,7 @@ class Project < ActiveRecord::Base
   validates :github_repository, :presence => true
 
   def self.update_from_webhook payload
-    project = where("github_respository = ?", payload['repository']['url'])
+    project = where("github_respository = ?", payload['repository']['url']).first
     if project.nil?
       throw Error
     else

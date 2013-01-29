@@ -24,7 +24,7 @@ describe Project do
 
   describe "::update_from_webhook" do
     before(:each) do
-      Project.should_receive(:where).and_return(@project)
+      Project.should_receive(:where).and_return([@project])
     end
 
     it 'should  call update last commit on the project' do
