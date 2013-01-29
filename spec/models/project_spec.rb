@@ -29,11 +29,11 @@ describe Project do
 
     it 'should  call update last commit on the project' do
       @project.should_receive(:update_last_commit)
-      Project.update_from_webhook 'repository' => { 'url' => 'http://example.com', 
-                                                    'head_commit' => { 'id' => 1,
-                                                                       'message' => 'somthing',
-                                                                       'committer' => { 'name' => 'test' },
-                                                                       'timestamp' => 'asdf' }}
+      Project.update_from_webhook 'repository' => { 'url' => 'http://example.com'},
+                                  'head_commit' => { 'id' => 1,
+                                                     'message' => 'somthing',
+                                                     'committer' => { 'name' => 'test' },
+                                                     'timestamp' => 'asdf' }
     end
   end
 
