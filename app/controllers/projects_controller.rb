@@ -65,7 +65,7 @@ class ProjectsController < ApplicationController
   end
 
   def webhook
-    @project = Project.update_from_webhook params[:payload]
+    Project.update_from_webhook params
     head :ok
   end
 
