@@ -60,7 +60,11 @@ class Build
 
     Dir.chdir "#{ Rails.root }/tmp/deploy/#{extract_dir}/#{build_dir}"
     to_upload = Dir['**/*'].reject{ |path| File.directory? path }
-    to_upload.delete 'index.html'
+
+    if to_upload.include? 'index.html'
+      bucket.objects['index.html'].write file: 'index.html', acl: :public_read, content_type: 'text/html', cache_control: 'no-cache, must_revalidate'
+      to_upload.delete 'index.html'
+    end
 
     to_upload.each.with_index do |file, index|
       content_type = case File.extname(file)
@@ -81,6 +85,5 @@ class Build
       bucket.objects[file].write file: file, acl: :public_read, content_type: content_type
     end
 
-    bucket.objects['index.html'].write file: 'index.html', acl: :public_read, content_type: 'text/html', cache_control: 'no-cache, must_revalidate'
   end
 end
