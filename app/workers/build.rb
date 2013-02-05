@@ -1,5 +1,3 @@
-require 'fileutils'
-
 class Build
   @queue = :builds
 
@@ -31,13 +29,13 @@ class Build
         return
       end
       message = Message.from_build "Successfully deployed #{project.name}", '', user, project
-      FileUtils.rm_rf(extract_dir)
       project.update_deploy_status deploy
       deploy.build_time = Time.now
       deploy.save!
     else
       message = Message.from_build "Failed to build #{project.name}", output, user, project
     end
+    `rm -rf #{extract_dir}`
   end
 
   def self.build_project build_step, extract_dir
