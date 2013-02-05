@@ -3,6 +3,8 @@ class User < ActiveRecord::Base
   has_and_belongs_to_many :projects
   has_many :messages
 
+  before_create :generate_token
+
   validates_presence_of :name
   validates_presence_of :oauth_token
   validates_presence_of :github_username
@@ -28,5 +30,13 @@ class User < ActiveRecord::Base
 
   def changed_credentials? credentials
     !(oauth_token == credentials[:token])
+  end
+
+  private
+
+  def generate_token
+    begin
+      self.reno_token = SecureRandom.hex
+    end while self.class.exists? reno_token: reno_token
   end
 end

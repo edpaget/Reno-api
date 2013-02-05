@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130116191527) do
+ActiveRecord::Schema.define(:version => 20130205212959) do
 
   create_table "deploys", :force => true do |t|
     t.string   "git_ref"
@@ -60,6 +60,7 @@ ActiveRecord::Schema.define(:version => 20130116191527) do
     t.datetime "created_at",      :null => false
     t.datetime "updated_at",      :null => false
     t.string   "github_username"
+    t.string   "reno_token"
   end
 
   add_foreign_key "deploys", "projects", :name => "deploys_project_id_fk"
