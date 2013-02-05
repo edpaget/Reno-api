@@ -71,7 +71,7 @@ class ProjectsController < ApplicationController
 
   def last_commit
     if logged_in?
-      @project = Project.find params[:id].to_i
+      @project = Project.find params[:project_id].to_i
       if @project.owner? @current_user
         @project.retrieve_last_commit @current_user
         head :ok
