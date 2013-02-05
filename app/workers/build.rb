@@ -35,7 +35,7 @@ class Build
     else
       message = Message.from_build "Failed to build #{project.name}", output, user, project
     end
-    `rm -rf #{extract_dir}`
+    `rm -rf #{"#{Rails.root}/tmp/deploy/#{extract_dir}"}`
   end
 
   def self.build_project build_step, extract_dir
