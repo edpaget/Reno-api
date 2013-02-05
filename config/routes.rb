@@ -1,5 +1,6 @@
 ZooBuild::Application.routes.draw do
   resources :projects do
+    get 'last_commit', to: 'projects#last_commit'
     get 'build', to: 'projects#build'
 
     resources :deploys do

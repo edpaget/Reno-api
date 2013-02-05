@@ -160,4 +160,7 @@ describe ProjectsController do
       end
     end
   end
+
+  describe '#last_commit' do
+  end
 end

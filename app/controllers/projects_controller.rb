@@ -69,4 +69,18 @@ class ProjectsController < ApplicationController
     head :ok
   end
 
+  def last_commit
+    if logged_in?
+      @project = Project.find params[:id].to_i
+      if @project.owner? @current_user
+        @project.retrieve_last_commit @current_user
+        head :ok
+      else
+        not_authorized
+      end
+    else
+      not_authorized
+    end
+  end
+
 end
