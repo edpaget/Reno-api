@@ -1,4 +1,5 @@
 class DeploysController < ApplicationController
+  skip_before_filter :logged_in, only: [:index, :show]
   def index
     @deploys = Deploy.where "project_id = ?", params[:project_id].to_i
     render json: @deploys.as_json
@@ -10,14 +11,10 @@ class DeploysController < ApplicationController
   end
 
   def build
-    if logged_in?
-      @deploy = Deploy.find params[:deploy_id].to_i
-      if @deploy.project.owner? @current_user
-        @deploy.build_deploy @current_user
-        head :ok
-      else
-        not_authorized
-      end
+    @deploy = Deploy.find params[:deploy_id].to_i
+    if @deploy.project.owner? @current_user
+      @deploy.build_deploy @current_user
+      head :ok
     else
       not_authorized
     end

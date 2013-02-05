@@ -1,11 +1,9 @@
 class ProjectsController < ApplicationController
+  skip_before_filter :logged_in, :only => [:show, :webhook]
+
   def index
-    if logged_in?
-      @projects = @current_user.projects
-      render json: @projects.as_json(:include => [:last_commit, :active_deploy])
-    else
-      not_authorized
-    end
+    @projects = @current_user.projects
+    render json: @projects.as_json(:include => [:last_commit, :active_deploy])
   end
 
   def show
@@ -14,51 +12,35 @@ class ProjectsController < ApplicationController
   end
 
   def create
-    if logged_in?
-      @project = Project.from_post params, @current_user
+    @project = Project.from_post params, @current_user
+    render json: @project.as_json(:include => :last_commit)
+  end
+
+  def update
+    @project = Project.find params[:id].to_i 
+    if @project.owner? @current_user
+      @project.update_from_params params
       render json: @project.as_json(:include => :last_commit)
     else
       not_authorized
     end
   end
 
-  def update
-    if logged_in?
-      @project = Project.find params[:id].to_i 
-      if @project.owner? @current_user
-        @project.update_from_params params
-        render json: @project.as_json(:include => :last_commit)
-      else
-        not_authorized
-      end
-    else
-      not_authorized
-    end
-  end
-
   def destroy
-    if logged_in?
-      @project = Project.find params[:id].to_i
-      if @project.owner? @current_user
-        @project.destroy
-        head :ok
-      else
-        not_authorized
-      end
+    @project = Project.find params[:id].to_i
+    if @project.owner? @current_user
+      @project.destroy
+      head :ok
     else
       not_authorized
     end
   end
 
   def build
-    if logged_in?
-      @project = Project.find params[:project_id].to_i
-      if @project.owner? @current_user
-        @project.build_project @current_user
-        head :ok
-      else
-        not_authorized
-      end
+    @project = Project.find params[:project_id].to_i
+    if @project.owner? @current_user
+      @project.build_project @current_user
+      head :ok
     else
       not_authorized
     end
@@ -70,14 +52,10 @@ class ProjectsController < ApplicationController
   end
 
   def last_commit
-    if logged_in?
-      @project = Project.find params[:project_id].to_i
-      if @project.owner? @current_user
-        @project.retrieve_last_commit @current_user
-        head :ok
-      else
-        not_authorized
-      end
+    @project = Project.find params[:project_id].to_i
+    if @project.owner? @current_user
+      @project.retrieve_last_commit @current_user
+      head :ok
     else
       not_authorized
     end

@@ -1,4 +1,6 @@
 class SessionsController < ApplicationController
+  skip_before_filter :logged_in
+
   def create
     @current_user = User.find_or_create_from_omniauth auth_hash
     set_session

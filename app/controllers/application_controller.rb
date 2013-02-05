@@ -1,6 +1,10 @@
 class ApplicationController < ActionController::API
+  include ActionController::HttpAuthentication::Token::ControllerMethods
+
   before_filter :set_headers
   before_filter :current_user
+  before_filter :logged_in
+
   helper_method :current_user
   helper_method :not_authorized
 
@@ -35,7 +39,18 @@ class ApplicationController < ActionController::API
     session[:user_id] = @current_user.id
   end
 
-  def logged_in?
+  def logged_in
+    session? || token?
+  end
+
+  def token?
+    authenticate_or_request_with_http_token do |key, options|
+      @current_user = User.by_reno_token key if User.exists? reno_token: key
+    end
+    !@current_user.nil?
+  end
+
+  def session?
     !session[:user_id].nil?
   end
 
