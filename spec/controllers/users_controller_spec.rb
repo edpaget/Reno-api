@@ -1,15 +1,17 @@
 require 'spec_helper'
 
 describe UsersController do
+  before(:each) do
+    User.should_receive(:find).and_return(FactoryGirl.create(:user))
+    session[:user_id] = 1
+  end
 
   describe "#index" do
+    before(:each) do
+      get :index
+    end
+    
     describe 'logged in' do
-      before(:each) do
-        User.should_receive(:find).and_return(FactoryGirl.create(:user))
-        session[:user_id] = 1
-        get :index
-      end
-
       it 'should get the current_user' do
         expect(assigns(:current_user)).to be_a(User)
       end
@@ -29,6 +31,13 @@ describe UsersController do
         get :index
         expect(response.status).to eq(401)
       end
+    end
+  end
+
+  describe "#signout" do
+    it 'should reset the session' do
+      controller.should_receive(:reset_session)
+      get :signout
     end
   end
 

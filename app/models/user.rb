@@ -1,5 +1,5 @@
 class User < ActiveRecord::Base
-  attr_accessible :email, :name, :oauth_token, :provider, :uid, :github_username
+  attr_accessible :email, :name, :oauth_token, :provider, :uid, :github_username, :image
   has_and_belongs_to_many :projects
   has_many :messages
 
@@ -20,6 +20,7 @@ class User < ActiveRecord::Base
         u.name = auth[:info][:name]
         u.oauth_token = auth[:credentials][:token]
         u.github_username = auth[:info][:nickname]
+        u.image = auth[:info][:image]
       end
     elsif user.changed_credentials? auth[:credentials]
       new_credentials = { :oauth_token => auth[:credentials][:token] }

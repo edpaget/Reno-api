@@ -97,11 +97,6 @@ class Project < ActiveRecord::Base
     deploys.select { |d| d.deploy_status == "last-commit" }.first
   end
 
-  def most_recent_deploy
-    sorted_deploys = deploys.sort { |left, right| right.build_time <=> left.build_time }
-    sorted_deploys.first.build_time
-  end
-
   def active_deploy
     deploys.select { |d| d.deploy_status == "active" }.first
   end

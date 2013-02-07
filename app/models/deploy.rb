@@ -3,6 +3,7 @@ class Deploy < ActiveRecord::Base
   belongs_to :project
 
   before_destroy :remove_tarball
+  default_scope order('build_time DESC')
 
   def build_deploy user
     Resque.enqueue Build, id, user.id

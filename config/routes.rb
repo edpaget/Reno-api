@@ -11,6 +11,7 @@ ZooBuild::Application.routes.draw do
   post "projects/webhook", to: 'projects#webhook'
   get "messages", to: 'messages#index'
   get 'users', to: 'users#index'
+  get 'users/signout', to: 'users#signout'
   match '/auth/:provider/callback', to: 'sessions#create'
   match '*all' => 'application#cors', constraints: { method: 'OPTIONS' }
   mount Resque::Server, :at => "/resque"

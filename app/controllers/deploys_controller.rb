@@ -1,5 +1,5 @@
 class DeploysController < ApplicationController
-  skip_before_filter :logged_in, only: [:index, :show]
+  skip_before_filter :logged_in?, only: [:index, :show]
   def index
     @deploys = Deploy.where "project_id = ?", params[:project_id].to_i
     render json: @deploys.as_json

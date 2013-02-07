@@ -8,7 +8,7 @@ class ProjectsController < ApplicationController
 
   def show
     @project = Project.find params[:id].to_i
-    render json: @project.as_json(:include => :last_commit)
+    render json: @project.as_json(:include => [:last_commit, :active_deploy])
   end
 
   def create

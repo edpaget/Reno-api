@@ -136,12 +136,6 @@ describe Project do
     end
   end
 
-  describe '#most_recent_deploy' do
-    it 'should return a string of the most recent deploy' do
-      expect(@project.most_recent_deploy).to eq("2013-01-10 12:51:31")
-    end
-  end
-
   describe '#update_from_webhook' do
   end
 

@@ -3,7 +3,7 @@ class ApplicationController < ActionController::API
 
   before_filter :set_headers
   before_filter :current_user
-  before_filter :logged_in
+  before_filter :logged_in?
 
   helper_method :current_user
   helper_method :not_authorized
@@ -15,11 +15,8 @@ class ApplicationController < ActionController::API
   private
 
   def allowed? origin
-    [ 'localhost:3333',
-      'localhost:3020',
-      '0.0.0.0:3333',
-      'reno.zooniverse.org',
-      'zooniverse-demo.s3.amazonaws.com' ].map { |location| "http://#{location}" }.include? origin
+    %w(localhost:3333 localhost:3020 0.0.0.0:3333 reno.zooniverse.org)
+      .map{ |location| "http://#{location}" }.include? origin
   end
 
   def set_headers
@@ -39,7 +36,7 @@ class ApplicationController < ActionController::API
     session[:user_id] = @current_user.id
   end
 
-  def logged_in
+  def logged_in?
     session? || token?
   end
 
