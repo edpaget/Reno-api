@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130207171526) do
+ActiveRecord::Schema.define(:version => 20130207193730) do
 
   create_table "deploys", :force => true do |t|
     t.string   "git_ref"
@@ -44,6 +44,8 @@ ActiveRecord::Schema.define(:version => 20130207171526) do
     t.string   "build_step"
     t.string   "build_dir"
     t.string   "branch"
+    t.boolean  "webhook"
+    t.string   "project_type"
   end
 
   create_table "projects_users", :force => true do |t|

@@ -1,11 +1,13 @@
 class Project < ActiveRecord::Base
-  attr_accessible :github_repository, :jenkins_url, :name, :s3_bucket, :build_step, :build_dir, :branch
+  attr_accessible :github_repository, :jenkins_url, :name, :s3_bucket, :build_step, :build_dir, :branch, :webhook, :project_type
   has_many :deploys, :dependent => :destroy
   has_many :messages, :dependent => :destroy
   has_and_belongs_to_many :users
 
   validates :name, :presence => true
   validates :github_repository, :presence => true
+  validates :project_type, :inclusion => { in: %w(hem brunch cake ec2-rails ec2-rails-elb heroku-rails),
+                                           message: "%{value} isn't a recognized project type" }
 
   def self.update_from_webhook payload
     project = where("github_repository = ?", payload['repository']['url']).first
@@ -33,6 +35,8 @@ class Project < ActiveRecord::Base
         p.s3_bucket = payload[:s3_bucket] if payload.has_key? :s3_bucket
         p.build_step = payload[:build_step] if payload.has_key? :build_step
         p.build_dir = payload[:build_dir] if payload.has_key? :build_dir
+        p.webhook = payload[:webhook] if payload.has_key? :webhook
+        p.project_type = payload[:project_type] if payload.has_key? :project_type
       end
       project.set_github_webhook user
       project.retrieve_last_commit user
@@ -43,7 +47,7 @@ class Project < ActiveRecord::Base
   end
 
   def set_github_webhook user
-    Resque.enqueue GithubWebhook, user.id, self.name
+    Resque.enqueue GithubWebhook, user.id, self.name if webhook
   end
 
   def retrieve_last_commit user
@@ -78,15 +82,17 @@ class Project < ActiveRecord::Base
     Resque.enqueue GithubTarball, users.first.id, id
   end
 
-  def update_from_params params
+  def update_from_params params, user
     params = params.keep_if do |key, value| 
       ['jenkins_url', 
        's3_bucket', 
        'build_step', 
        'branch',
-       'build_dir'].include? key
+       'build_dir',
+       'webhook'].include? key
     end
     update_attributes params
+    set_github_webhook user if webhook_changed? && webhook
   end
 
   def build_project user

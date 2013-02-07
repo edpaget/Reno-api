@@ -19,7 +19,7 @@ class ProjectsController < ApplicationController
   def update
     @project = Project.find params[:id].to_i 
     if @project.owner? @current_user
-      @project.update_from_params params
+      @project.update_from_params params, @current_user
       render json: @project.as_json(:include => :last_commit)
     else
       not_authorized

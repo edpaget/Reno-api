@@ -11,7 +11,7 @@ describe Project do
                  :commit => { :id => 'asdfasd', 
                                :message => "test", 
                                :committer => { :name => "Ed",
-                                              :date => "2011-04-14T16:00:49Z" }, 
+                                               :date => "2011-04-14T16:00:49Z" }, 
                                :timestamp => "2008-02-15T14:57:17-08:00" }}
               
   end
@@ -21,6 +21,7 @@ describe Project do
   it { should have_many(:deploys) }
   it { should have_many(:messages) }
   it { should have_and_belong_to_many(:users) }
+  it { should validate_acceptance_of(:project_type).with_message(/isn't a recognized project type/) }
 
   describe "::update_from_webhook" do
     before(:each) do
@@ -98,7 +99,7 @@ describe Project do
       @project.should_receive(:update_attributes)
       @project.update_from_params({ 'jenkins_url' => 'aasfd', 
                                     's3_bucket' => 'bucket_name', 
-                                    'build_dir' => 'public'})
+                                    'build_dir' => 'public'}, @user)
     end
   end
 

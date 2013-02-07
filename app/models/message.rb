@@ -3,6 +3,8 @@ class Message < ActiveRecord::Base
   belongs_to :user
   belongs_to :project
 
+  default_scope order('created_at DESC')
+
   def self.from_build status, text, user, project
     message = create! :status => status, :text => text
     message.user = user
