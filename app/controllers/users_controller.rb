@@ -5,6 +5,6 @@ class UsersController < ApplicationController
 
   def signout
     reset_session
-    head :ok
+    redirect_to 'http://reno.zooniverse.org'
   end
 end

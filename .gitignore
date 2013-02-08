@@ -20,3 +20,4 @@
 .rvmrc
 .ruby-version
 .rbenv-version
+bin/
