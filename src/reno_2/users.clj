@@ -12,6 +12,11 @@
   (:import [org.bson.types ObjectId]
            [java.security MessageDigest]))
 
+
+
+(defmacro if-user-authed? [id user body]
+  `(if (= (to-object-id ~id) (:_id ~user)) ~body resp-forbidden))
+
 (defn- sha256
   "Generates SHA-256 hash of the given inputs"
   [& inputs]
@@ -32,7 +37,7 @@
 
 (defn by-auth
   [{:keys [email pass]}]
-  (let [user (find-one "users" {:email email})]
+  (let [user (find-one-as-map "users" {:email email})]
     (when (verify pass (:pass user))
       user)))
 
@@ -44,28 +49,27 @@
                      :email email
                      :project-ids []
                      :token (sha256 email (System/currentTimeMillis))}]
-    (insert-and-return "users" user-record)))
+    (insert-and-return "users" (timestamp user-record))))
 
 (defn update-pass!
   [id user {:keys [old-pass new-pass]}]
-  (when (and (= id (.toString (:_id user))))
-    (verify old-pass (:pass user))
-    (do (update-by-id "users" (to-object-id id) 
-                      (merge user {:pass (encrypt new-pass 16384 8 1)
+  (when (verify old-pass (:pass user))
+    (let [user-record (merge user {:pass (encrypt new-pass 16384 8 1)
                                    :token (sha256 (:email user) 
-                                                  (System/currentTimeMillis))}))
-        (by-id id))))
+                                                  (System/currentTimeMillis))})] 
+      (update-by-id "users" (to-object-id id) (timestamp user-record))
+      (by-id id))))
 
 (defn update-projects!
   [id & project-ids]
   (doseq [project-id project-ids] 
     (update-by-id "users" (to-object-id id) 
-                  {$addToSet {:project-ids [project-id]}})))
+                  {$addToSet {:project-ids project-id}})))
 
 (defn delete!
-  [id user]
-  (when (= id (.toString (:_id user)))
-    (remove-by-id "users" (to-object-id id))))
+  [id]
+  (remove-by-id "users" (to-object-id id))
+  resp-no-content)
 
 (defn- strip-passwords
   [handler]
@@ -81,13 +85,12 @@
        (resp-ok {:users [user]}))
   (POST "/" {params :params} 
         (resp-created {:users [(create! params)]}))
-  (GET "/:id" [id :as r] 
-       (resp-ok {:users [(by-id id)]}))
+  (GET "/:id" [id user] 
+       (if-user-authed? id user (resp-ok {:users [(by-id id)]})))
   (PUT "/:id" [id user & pass] 
-       (resp-ok {:users [(update-pass! id user pass)]}))
-  (DELETE "/:id" [id user] (if-not (nil? (delete! id user))
-                             resp-no-content
-                             resp-forbidden)))
+       (if-user-authed? id user (resp-ok {:users [(update-pass! id user pass)]})))
+  (DELETE "/:id" [id user] 
+          (if-user-authed? id user (delete! id))))
 
 (def users-routes
   (strip-passwords raw-routes))

@@ -1,5 +1,6 @@
 (ns reno-2.util
-  (:use [ring.util.response :only [content-type charset response status]]))
+  (:use [clj-time.core :only [now]]
+        [ring.util.response :only [content-type charset response status]]))
 
 (defn- resp
   [body]
@@ -28,4 +29,8 @@
   "A ring Response with status 403 Forbidden,
   content-type application/json, and charset utf-8"
   ((resp "") 403))
- 
+
+(defn timestamp
+  "Adds updated-at and created-at fields to a map."
+  [m]
+  (merge {:created-at (now)} m {:updated-at (now)}))

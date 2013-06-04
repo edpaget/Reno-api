@@ -21,8 +21,8 @@
               :email "test@example.com"}]
 
     (testing "index - /"
-      (let [response (users-routes (request-with-params :get "/" 
-                                                        {:user extant-user}))]
+      (let [response (users-routes 
+                       (request-with-params :get "/" {:user extant-user}))]
         (is (= (:status response) 200) "Returns 200 OK")))
 
     (testing "create - /"
@@ -34,7 +34,8 @@
             "It does not return the password")))
 
     (testing "show - /:id"
-      (let [response (users-routes (request :get extant-user-route))]
+      (let [response (users-routes (request-with-params :get extant-user-route
+                                                        {:user extant-user}))]
         (is (= (:status response) 200) "Returns 200 OK")
         (is (= "first@example.com" (-> response :body :users first :email)))))
 
@@ -42,7 +43,7 @@
       (let [response (users-routes (request-with-params :put extant-user-route 
                                                         {:user extant-user 
                                                          :new-pass "test" 
-                                                         :old-pass "text-pass"}))]
+                                                         :old-pass "test-pass"}))]
         (is (= (:status response) 200) "Returns 200 OK")
         (is (= "first@example.com" (-> response :body :users first :email)))))
     (testing "delete - /:id"
