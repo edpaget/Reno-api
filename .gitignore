@@ -2,6 +2,8 @@
 /lib
 /classes
 /checkouts
+/hem/s3cfg
+/brunch/s3cfg
 pom.xml
 *.jar
 *.class

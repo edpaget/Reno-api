@@ -2,6 +2,8 @@
   (:use compojure.core
         reno-2.util
         monger.operators
+        [container-ship.core :only [create-container wait-container 
+                                    delete-container container-start]]
         [clj-time.core :only [now]]
         [monger.conversion :only [to-object-id]]
         [monger.collection :only [insert-and-return find-map-by-id find-maps
@@ -25,21 +27,23 @@
   (find-map-by-id "projects" (to-object-id id)))
 
 (defn update!
-  [id user {:keys [name type commands snapshots build-ids]}]
+  [id user {:keys [name type commands snapshots s3-bucket build-ids]}]
   (let [project-updated {:_id (to-object-id id)
                          :name name
                          :type type
                          :commands commands
+                         :s3-bucket s3-bucket
                          :snapshots snapshots
                          :build-ids build-ids}]
     (update-by-id "projects" (to-object-id id) (timestamp project-updated))))
 
 (defn create!
   "Stores a new project in Mongo"
-  [user {:keys [name type commands]}]
+  [user {:keys [name type commands s3-bucket]}]
   (let [project-record {:_id (ObjectId.)
                         :name name
                         :type type
+                        :s3-bucket s3-bucket
                         :snapshots []
                         :build-ids []
                         :commands commands}]
@@ -74,12 +78,29 @@
     (update-by-id "projects" (to-object-id id) 
                   {:snapshots {$addToSet (timestamp snapshot)}})))
 
+(defn- wait-promise
+  [container-id]
+  (let [pro (promise)]
+    (future (deliver pro (wait-container container-id)))
+    pro))
+
+(defn build
+  [{:keys [type s3-bucket]} {:keys [s3-url]}]
+  (cond (= type "hem") (let [container-id (:id (create-container ["./build/build.sh" s3-url s3-bucket] 
+                                                                 "edpaget/hem-build"))]
+                         (when (container-start container-id)
+                           (-> (wait-promise container-id)
+                               (then x (delete-container container-id)))))))
+
 (defn update-snapshot-status!
   [id snap-id status]
+  (when (= status "active")
+    (do (build (by-id id) (get-snapshot id snap-id))
+        (deactivate-snapshot active-snapshot)))
   (update "projects" 
           {:_id (to-object-id id) :snapshots._id {:_id (to-object-id snap-id)}} 
           {$set {:snapshots.$.status status}
-                {:snapshots.$.updated-at (now)}})
+           {:snapshots.$.updated-at (now)}})
   (get-snapshot id snap-id))
 
 (defn remove-snapshot!
