@@ -3,7 +3,7 @@
         reno-2.util
         monger.operators
         [container-ship.core :only [create-container wait-container 
-                                    delete-container container-start]]
+                                    delete-container start-container]]
         [clj-time.core :only [now]]
         [monger.conversion :only [to-object-id]]
         [monger.collection :only [insert-and-return find-map-by-id find-maps
@@ -78,29 +78,24 @@
     (update-by-id "projects" (to-object-id id) 
                   {:snapshots {$addToSet (timestamp snapshot)}})))
 
-(defn- wait-promise
-  [container-id]
-  (let [pro (promise)]
-    (future (deliver pro (wait-container container-id)))
-    pro))
-
 (defn build
   [{:keys [type s3-bucket]} {:keys [s3-url]}]
-  (cond (= type "hem") (let [container-id (:id (create-container ["./build/build.sh" s3-url s3-bucket] 
+  (cond (= type "hem") (let [container-id (:Id (create-container ["./build/build.sh" s3-url s3-bucket] 
                                                                  "edpaget/hem-build"))]
-                         (when (container-start container-id)
-                           (-> (wait-promise container-id)
-                               (then x (delete-container container-id)))))))
+                         (println container-id)
+                         (when (start-container container-id)
+                           (do (wait-container container-id)
+                               (delete-container container-id))))))
 
 (defn update-snapshot-status!
   [id snap-id status]
   (when (= status "active")
     (do (build (by-id id) (get-snapshot id snap-id))
-        (deactivate-snapshot active-snapshot)))
+        (update-snapshot-status! id (:_id active-snapshot) "archived")))
   (update "projects" 
           {:_id (to-object-id id) :snapshots._id {:_id (to-object-id snap-id)}} 
-          {$set {:snapshots.$.status status}
-           {:snapshots.$.updated-at (now)}})
+          {$set {:snapshots.$.status status
+                 :snapshots.$.updated-at (now)}})
   (get-snapshot id snap-id))
 
 (defn remove-snapshot!

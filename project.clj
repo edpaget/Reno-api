@@ -7,9 +7,9 @@
                  [ring/ring-json "0.2.0"]
                  [clj-aws-s3 "0.3.6"]
                  [clj-time "0.5.1"]
-                 [clj-http "0.7.1"]
+                 [clj-http "0.7.2"]
                  [clojurewerkz/scrypt "1.0.0"]
-                 [container-ship "0.1.0-SNAPSHOT"]]
+                 [container-ship "0.1.1"]]
   :plugins [[lein-ring "0.8.5"]]
   :ring {:handler reno-2.handler/app}
   :profiles
